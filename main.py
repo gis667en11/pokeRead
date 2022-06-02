@@ -132,7 +132,7 @@ if __name__ == "__main__":
                     writeIndex = 0
                     for x in uniqueHash:
                         strvar = str(x)
-                        fp.write("%d, %s\n" % (writeIndex, strvar))
+                        fp.write("%d,%s\n" % (writeIndex, strvar))
                         writeIndex += 1
                 
                 engine.say('caught')
