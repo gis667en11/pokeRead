@@ -1,10 +1,7 @@
 import pyautogui
 import pyttsx3
 import time
-engine = pyttsx3.init()
-import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
-from PIL import Image, ImageEnhance, ImageOps, ImageFilter
+from PIL import Image
 
 # Global stuff
 textChange = 0
@@ -43,7 +40,7 @@ while True:
     clearTextbox(tb)
 
     # Take screenshot
-    im1 = pyautogui.screenshot(region=(30,750,1852,288))
+    im1 = pyautogui.screenshot(region=(2048,778,1852,288))
     im1.save('C:\\Users\\Family\\Documents\\Python\\processing\\im1_raw.png')    
 
     ## Detect all sides
