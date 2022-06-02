@@ -12,3 +12,6 @@ My kid loves pokemon but can't read. What better way to learn programming and sp
  - Scenario 1: A single text box
  - Scenario 2: A text box that shifts, revealing a third line, (fourth line?)
  - Scenario 3: ...
+
+*Cool idea: Save the hash of each text box and do lookup table*
+
