@@ -85,15 +85,7 @@ appendNewHash = 0
 # MainProgram
 if __name__ == "__main__":
 
-    while True:
 
-        # Take screenshot
-        tb_Raw = pyautogui.screenshot(region=(40,760,1839,260)) # (region=(1960,760,1839,260))
-        #tb_Raw.save(path_tbRaw)
-
-        detect_tb(tb_blueConv, tb_Raw)
-
-        if tb_blueConv.detected:
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
 
             if firstScan:
