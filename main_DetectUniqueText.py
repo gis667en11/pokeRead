@@ -97,15 +97,15 @@ if __name__ == "__main__":
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
 
             if firstScan:
-                prev_hash = imagehash.dhash(tb_textRaw)
+                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
                 firstScan = 0
 
-            new_hash = imagehash.dhash(tb_textRaw)
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
             diff = new_hash - prev_hash
             print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
             prev_hash = new_hash
 
-            if abs(diff) >= 4:
+            if abs(diff) >= 15:
                 hashDiffFlat_Count = 0
             else:
                 hashDiffFlat_Count += 1
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                 appendNewHash = 0                
 
             for x in uniqueHash:
-                if abs(x - new_hash) < 4:
+                if abs(x - new_hash) < 15:
                     appendNewHash = 0
             
             if appendNewHash:
