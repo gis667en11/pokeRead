@@ -1,3 +1,9 @@
+from tkinter import *
+window=Tk()
+lbl=Label(window, text="This is Label widget", fg='red', font=("Helvetica", 16))
+lbl.place(x=60, y=50)
+window.title('Hello Python')
+window.geometry("300x200+10+10")
 
 import pyautogui
 import imagehash
@@ -12,7 +18,6 @@ path_Border = os.path.join(path_dir,'borderReference')
 path_processImages = os.path.join(path_dir,'processImages')
 path_uniqueDialog = os.path.join(path_dir,'uniqueDialogue')
 path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
-path_screenshotFull = os.path.join(path_uniqueDialog,'screenshotFull')
 
 hashTable_from_csv = {}
 
@@ -79,9 +84,7 @@ uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
 
-# MainProgram
-if __name__ == "__main__":
-
+def getHashTable():
     # Check for previously written hash table
     if os.path.exists(path_dialogHashTable):
         
@@ -93,66 +96,12 @@ if __name__ == "__main__":
             for x in list(hashTable_from_csv.values()):
                 uniqueHash.append(imagehash.hex_to_hash(x))
 
+        listLength = len(uniqueHash)
+        print(f"uniqueHashCount: {listLength}")
+
+# MainProgram
+if __name__ == "__main__":
+
     while True:
-
-        # Grab whole screen
-        screenshotWhole = pyautogui.screenshot()
-
-        # Take screenshot
-        tb_Raw = pyautogui.screenshot(region=(40,760,1839,260))
-
-        detect_tb(tb_Conv, tb_Raw)
-
-        if tb_Conv.detected:
-            tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
-
-            if firstScan:
-                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
-                firstScan = 0
-
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
-            diff = new_hash - prev_hash
-            print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
-            prev_hash = new_hash
-
-            if abs(diff) >= 15:
-                hashDiffFlat_Count = 0
-            else:
-                hashDiffFlat_Count += 1
-
-            if hashDiffFlat_Count > 8:
-                appendNewHash = 1
-            else:
-                appendNewHash = 0                
-
-            for x in uniqueHash:
-                if abs(x - new_hash) < 15:
-                    appendNewHash = 0
-            
-            if appendNewHash:
-                uniqueHash.append(new_hash)
-
-                newIndex = len(uniqueHash) - 1
-
-                # save screenshot
-                fileName = str(newIndex) + ".png"
-                fileNameFull = str(newIndex) + "_full.png"
-                path_newImage = os.path.join(path_uniqueDialog,fileName)
-                path_newImageFull = os.path.join(path_screenshotFull,fileNameFull)
-
-                tb_textRaw.save(path_newImage)
-                screenshotWhole.save(path_newImageFull)
-
-                with open(path_dialogHashTable, 'w') as fp:
-
-                    writeIndex = 0
-                    for x in uniqueHash:
-                        strvar = str(x)
-                        fp.write("%d,%s\n" % (writeIndex, strvar))
-                        writeIndex += 1
-                
-                engine.say('caught')
-                engine.runAndWait()
-        else:
-            hashDiffFlat_Count = 0
-            
+        window.after(0, getHashTable)
+        window.mainloop()
