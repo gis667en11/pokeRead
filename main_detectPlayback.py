@@ -77,7 +77,8 @@ def detect_tb(tbReference, searchImage):
 
 uniqueHash = []
 prev_playedHash = -1
-appendNewHash = 0
+flatHash = 0
+hashDiffFlat_Count = 0
 
 # MainProgram
 if __name__ == "__main__":
@@ -107,18 +108,43 @@ if __name__ == "__main__":
         detect_tb(tb_Conv, tb_Raw)
 
         if tb_Conv.detected:
+
             print("tb detected")
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
             new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)        
 
-            index0 = 0
-            for x in uniqueHash:
-                if abs(x - new_hash) < 15 and index0 != prev_playedHash:
-                    prev_playedHash = index0
-                    print(f'triggering audio for file {index0}')
-                    fileName = str(index0) + ".wav"
-                    print("FileName: " + fileName)
-                    path_fileName = os.path.join(path_audio,fileName)
-                    print("FilePath: " + path_fileName)
-                    winsound.PlaySound(path_fileName, winsound.SND_ASYNC | winsound.SND_ALIAS )
-                index0 += 1
+            if firstScan:
+                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+                firstScan = 0
+
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+            diff = new_hash - prev_hash
+            print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
+            prev_hash = new_hash
+
+            if abs(diff) >= 15:
+                hashDiffFlat_Count = 0
+            else:
+                hashDiffFlat_Count += 1
+
+            if hashDiffFlat_Count > 10:
+                flatHash = 1
+            else:
+                flatHash = 0
+
+            if flatHash:
+                index0 = 0
+                for x in uniqueHash:
+                    if abs(x - new_hash) < 15 and index0 != prev_playedHash:
+                        prev_playedHash = index0
+                        print(f'triggering audio for file {index0}')
+                        fileName = str(index0) + ".wav"
+                        print("FileName: " + fileName)
+                        path_fileName = os.path.join(path_audio,fileName)
+                        print("FilePath: " + path_fileName)
+                        winsound.PlaySound(path_fileName, winsound.SND_ASYNC | winsound.SND_ALIAS )
+                    index0 += 1
+
+        else:
+            flatHash = 0
+            hashDiffFlat_Count = 0
