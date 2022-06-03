@@ -1,18 +1,10 @@
-
+import path
 import pyautogui
 import imagehash
 import pyttsx3
 engine = pyttsx3.init()
 import os
 import csv
-
-# Get the directory for this program
-path_dir = os.path.dirname(os.path.realpath(__file__))
-path_Border = os.path.join(path_dir,'borderReference')
-path_processImages = os.path.join(path_dir,'processImages')
-path_uniqueDialog = os.path.join(path_dir,'uniqueDialogue')
-path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
-path_screenshotFull = os.path.join(path_uniqueDialog,'screenshotFull')
 
 hashTable_from_csv = {}
 
@@ -33,14 +25,14 @@ class textBoxOutline:
 
 tb_Conv = textBoxOutline()
 
-tb_Conv.path_blueTop = os.path.join(path_Border,'blue_Top.png')
-tb_Conv.path_blueBottom = os.path.join(path_Border,'blue_Bottom.png')
-tb_Conv.path_blueLeft = os.path.join(path_Border,'blue_Left.png')
-tb_Conv.path_blueRight = os.path.join(path_Border,'blue_Right.png')
-tb_Conv.path_greyTop = os.path.join(path_Border,'grey_Top.png')
-tb_Conv.path_greyBottom = os.path.join(path_Border,'grey_Bottom.png')
-tb_Conv.path_greyLeft = os.path.join(path_Border,'grey_Left.png')
-tb_Conv.path_greyRight = os.path.join(path_Border,'grey_Right.png')
+tb_Conv.path_blueTop = os.path.join(path.Border,'blue_Top.png')
+tb_Conv.path_blueBottom = os.path.join(path.Border,'blue_Bottom.png')
+tb_Conv.path_blueLeft = os.path.join(path.Border,'blue_Left.png')
+tb_Conv.path_blueRight = os.path.join(path.Border,'blue_Right.png')
+tb_Conv.path_greyTop = os.path.join(path.Border,'grey_Top.png')
+tb_Conv.path_greyBottom = os.path.join(path.Border,'grey_Bottom.png')
+tb_Conv.path_greyLeft = os.path.join(path.Border,'grey_Left.png')
+tb_Conv.path_greyRight = os.path.join(path.Border,'grey_Right.png')
 
 def clearTextbox(outline):
     outline.present_All = 0
@@ -48,9 +40,6 @@ def clearTextbox(outline):
     outline.obstructed = 0
     outline.absent = 0
     outline.detected = 0
-
-path_tbRaw = os.path.join(path_processImages,'image_1_tbRaw.png')
-path_tbTextRaw = os.path.join(path_processImages,'image_1_tbTextRaw.png')
 
 firstScan = 1
 
@@ -83,10 +72,10 @@ appendNewHash = 0
 if __name__ == "__main__":
 
     # Check for previously written hash table
-    if os.path.exists(path_dialogHashTable):
+    if os.path.exists(path.dialogHashTable):
         
         # Open table
-        with open(path_dialogHashTable, mode='r') as file_csv:
+        with open(path.dialogHashTable, mode='r') as file_csv:
             reader = csv.reader(file_csv)
             hashTable_from_csv = {rows[0]:rows[1] for rows in reader}
 
@@ -107,10 +96,10 @@ if __name__ == "__main__":
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
 
             if firstScan:
-                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+                prev_hash = imagehash.phash(tb_textRaw, hash_size = 24, highfreq_factor = 4)
                 firstScan = 0
 
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+            new_hash = imagehash.phash(tb_textRaw, hash_size = 24, highfreq_factor = 4)
             diff = new_hash - prev_hash
             print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
             prev_hash = new_hash
@@ -137,13 +126,13 @@ if __name__ == "__main__":
                 # save screenshot
                 fileName = str(newIndex) + ".png"
                 fileNameFull = str(newIndex) + "_full.png"
-                path_newImage = os.path.join(path_uniqueDialog,fileName)
-                path_newImageFull = os.path.join(path_screenshotFull,fileNameFull)
+                path_newImage = os.path.join(path.uniqueDialog,fileName)
+                path_newImageFull = os.path.join(path.screenshotFull,fileNameFull)
 
                 tb_textRaw.save(path_newImage)
                 screenshotWhole.save(path_newImageFull)
 
-                with open(path_dialogHashTable, 'w') as fp:
+                with open(path.dialogHashTable, 'w') as fp:
 
                     writeIndex = 0
                     for x in uniqueHash:

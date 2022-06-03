@@ -10,7 +10,7 @@ import os
 # Get the directory for this program
 path_dir = os.path.dirname(os.path.realpath(__file__))
 path_uniqueDialog = os.path.join(path_dir,'uniqueDialogue')
-path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.txt')
+path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
 
 uniqueHash = []
 
@@ -35,7 +35,7 @@ if __name__ == "__main__":
             if noImageCount > 10:
                 lastImage = 1
         else:
-            uniqueHash.append(str(imagehash.dhash(image, hash_size = 16)))
+            uniqueHash.append(str(imagehash.phash(image, hash_size = 24, highfreq_factor = 4)))
         finally:
             imageIndex += 1
 
