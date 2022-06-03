@@ -1,21 +1,19 @@
 
-from distutils.command.build_scripts import first_line_re
-from enum import unique
-from fileinput import filename
-from numpy import append
 import pyautogui
-from PIL import Image
 import imagehash
 import pyttsx3
 engine = pyttsx3.init()
 import os
+import csv
 
 # Get the directory for this program
 path_dir = os.path.dirname(os.path.realpath(__file__))
 path_Border = os.path.join(path_dir,'borderReference')
 path_processImages = os.path.join(path_dir,'processImages')
 path_uniqueDialog = os.path.join(path_dir,'uniqueDialogue')
-path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.txt')
+path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
+
+hashTable_from_csv = {}
 
 class textBoxOutline:
     present_All = 0
@@ -84,6 +82,17 @@ appendNewHash = 0
 
 # MainProgram
 if __name__ == "__main__":
+
+    # Check for previously written hash table
+    if os.path.exists(path_dialogHashTable):
+        
+        # Open table
+        with open(path_dialogHashTable, mode='r') as file_csv:
+            reader = csv.reader(file_csv)
+            hashTable_from_csv = {rows[0]:rows[1] for rows in reader}
+
+            for x in list(hashTable_from_csv.values()):
+                uniqueHash.append(imagehash.hex_to_hash(x))
 
     while True:
 
