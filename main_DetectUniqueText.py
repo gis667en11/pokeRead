@@ -21,17 +21,25 @@ class textBoxOutline:
     obstructed = 0
     absent = 0
     detected = 0
-    path_Top = 0
-    path_Bottom = 0
-    path_Left = 0
-    path_Right = 0
+    path_blueTop = 0
+    path_blueBottom = 0
+    path_blueLeft = 0
+    path_blueRight = 0
+    path_greyTop = 0
+    path_greyBottom = 0
+    path_greyLeft = 0
+    path_greyRight = 0
 
-tb_blueConv = textBoxOutline()
+tb_Conv = textBoxOutline()
 
-tb_blueConv.path_Top = os.path.join(path_Border,'blue_Top.png')
-tb_blueConv.path_Bottom = os.path.join(path_Border,'blue_Bottom.png')
-tb_blueConv.path_Left = os.path.join(path_Border,'blue_Left.png')
-tb_blueConv.path_Right = os.path.join(path_Border,'blue_Right.png')
+tb_Conv.path_blueTop = os.path.join(path_Border,'blue_Top.png')
+tb_Conv.path_blueBottom = os.path.join(path_Border,'blue_Bottom.png')
+tb_Conv.path_blueLeft = os.path.join(path_Border,'blue_Left.png')
+tb_Conv.path_blueRight = os.path.join(path_Border,'blue_Right.png')
+tb_Conv.path_greyTop = os.path.join(path_Border,'grey_Top.png')
+tb_Conv.path_greyBottom = os.path.join(path_Border,'grey_Bottom.png')
+tb_Conv.path_greyLeft = os.path.join(path_Border,'grey_Left.png')
+tb_Conv.path_greyRight = os.path.join(path_Border,'grey_Right.png')
 
 def clearTextbox(outline):
     outline.present_All = 0
@@ -55,26 +63,16 @@ def detect_tb(tbReference, searchImage):
     # Initialize text box object
     clearTextbox(tbReference)
 
-    side = [0,0,0,0]
-    sideCount = 0
+    side = pyautogui.locate(tbReference.path_blueTop, searchImage, grayscale=False)
 
-    side[0] = pyautogui.locate(tbReference.path_Top, searchImage, grayscale=False)
-    side[1] = pyautogui.locate(tbReference.path_Bottom, searchImage, grayscale=False)
-    side[2] = pyautogui.locate(tbReference.path_Left, searchImage, grayscale=False)
-    side[3] = pyautogui.locate(tbReference.path_Right, searchImage, grayscale=False)
-
-    for x in side:
-        if not isinstance(x, type(None)):
-            tbReference.present_Any = 1
-            sideCount += 1
-
-    # Check side presence
-    if not tbReference.present_Any:
-        tbReference.absent = 1
-    elif sideCount != 4:
-        tbReference.obstructed = 1
-    else:
+    if not isinstance(side, type(None)):
         tbReference.detected = 1
+    else:
+        side = pyautogui.locate(tbReference.path_greyTop, searchImage, grayscale=False)
+        if not isinstance(side, type(None)):
+            tbReference.detected = 1
+        else:
+            tbReference.detected = 0
 
 uniqueHash = []
 hashDiffFlat_Count = 0
@@ -97,12 +95,11 @@ if __name__ == "__main__":
     while True:
 
         # Take screenshot
-        tb_Raw = pyautogui.screenshot(region=(40,760,1839,260)) # (region=(1960,760,1839,260))
-        #tb_Raw.save(path_tbRaw)
+        tb_Raw = pyautogui.screenshot(region=(40,760,1839,260))
 
-        detect_tb(tb_blueConv, tb_Raw)
+        detect_tb(tb_Conv, tb_Raw)
 
-        if tb_blueConv.detected:
+        if tb_Conv.detected:
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
 
             if firstScan:
@@ -119,7 +116,7 @@ if __name__ == "__main__":
             else:
                 hashDiffFlat_Count += 1
 
-            if hashDiffFlat_Count > 4:
+            if hashDiffFlat_Count > 8:
                 appendNewHash = 1
             else:
                 appendNewHash = 0                
