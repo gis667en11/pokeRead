@@ -6,6 +6,8 @@ engine = pyttsx3.init()
 import os
 import csv
 
+LIKENESS_THRESHOLD = 20
+
 hashTable_from_csv = {}
 
 class textBoxOutline:
@@ -45,7 +47,6 @@ firstScan = 1
 
 def crop_image(input_image, start_x, start_y, width, height):
     """Pass input name image, output name image, x coordinate to start croping, y coordinate to start croping, width to crop, height to crop """
-    input_image
     box = (start_x, start_y, start_x + width, start_y + height)
     return input_image.crop(box)
 
@@ -80,7 +81,9 @@ if __name__ == "__main__":
             hashTable_from_csv = {rows[0]:rows[1] for rows in reader}
 
             for x in list(hashTable_from_csv.values()):
-                uniqueHash.append(imagehash.hex_to_hash(x))
+
+                if x != "0":
+                    uniqueHash.append(imagehash.hex_to_hash(x))
 
     while True:
 
@@ -96,15 +99,15 @@ if __name__ == "__main__":
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
 
             if firstScan:
-                prev_hash = imagehash.phash(tb_textRaw, hash_size = 24, highfreq_factor = 4)
+                prev_hash = imagehash.phash(tb_textRaw, hash_size = 36)
                 firstScan = 0
 
-            new_hash = imagehash.phash(tb_textRaw, hash_size = 24, highfreq_factor = 4)
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 36)
             diff = new_hash - prev_hash
-            print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
+            print(str(new_hash)[0:10] + ", " + str(prev_hash)[0:10] + ", diff = " + str(diff))
             prev_hash = new_hash
 
-            if abs(diff) >= 15:
+            if abs(diff) >= LIKENESS_THRESHOLD:
                 hashDiffFlat_Count = 0
             else:
                 hashDiffFlat_Count += 1
@@ -115,7 +118,7 @@ if __name__ == "__main__":
                 appendNewHash = 0                
 
             for x in uniqueHash:
-                if abs(x - new_hash) < 15:
+                if abs(x - new_hash) < LIKENESS_THRESHOLD + 10:
                     appendNewHash = 0
             
             if appendNewHash:

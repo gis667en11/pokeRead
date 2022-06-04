@@ -14,9 +14,7 @@ path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
 
 uniqueHash = []
 
-# MainProgram
-if __name__ == "__main__":
-
+def reHash():
     lastImage = 0
     imageIndex = 0
     noImageCount = 0
@@ -35,7 +33,7 @@ if __name__ == "__main__":
             if noImageCount > 10:
                 lastImage = 1
         else:
-            uniqueHash.append(str(imagehash.phash(image, hash_size = 24, highfreq_factor = 4)))
+            uniqueHash.append(str(imagehash.dhash(image, hash_size = 36)))
         finally:
             imageIndex += 1
 
@@ -48,3 +46,9 @@ if __name__ == "__main__":
             writeIndex += 1
     
     print("Done!")
+
+# MainProgram
+if __name__ == "__main__":
+
+    reHash()
+    
