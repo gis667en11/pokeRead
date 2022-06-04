@@ -6,6 +6,8 @@ import os
 import csv
 import winsound
 
+LIKENESS_THRESHOLD = 24
+
 # Get the directory for this program
 path_dir = os.path.dirname(os.path.realpath(__file__))
 path_Border = os.path.join(path_dir,'borderReference')
@@ -92,7 +94,8 @@ if __name__ == "__main__":
             hashTable_from_csv = {rows[0]:rows[1] for rows in reader}
 
             for x in list(hashTable_from_csv.values()):
-                uniqueHash.append(imagehash.hex_to_hash(x))
+                if x != "0":
+                    uniqueHash.append(imagehash.hex_to_hash(x))
 
             for x in uniqueHash:
                 print(x)
@@ -122,7 +125,7 @@ if __name__ == "__main__":
             print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
             prev_hash = new_hash
 
-            if abs(diff) >= 15:
+            if abs(diff) >= LIKENESS_THRESHOLD:
                 hashDiffFlat_Count = 0
             else:
                 hashDiffFlat_Count += 1
@@ -135,7 +138,7 @@ if __name__ == "__main__":
             if flatHash:
                 index0 = 0
                 for x in uniqueHash:
-                    if abs(x - new_hash) < 15 and index0 != prev_playedHash:
+                    if abs(x - new_hash) < (LIKENESS_THRESHOLD + 10) and index0 != prev_playedHash:
                         prev_playedHash = index0
                         print(f'triggering audio for file {index0}')
                         fileName = str(index0) + ".wav"
