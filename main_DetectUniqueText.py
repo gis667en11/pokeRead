@@ -6,42 +6,25 @@ engine = pyttsx3.init()
 import os
 import csv
 
-LIKENESS_THRESHOLD = 20
+LIKENESS_THRESHOLD = 24
 
 hashTable_from_csv = {}
 
 class textBoxOutline:
-    present_All = 0
-    present_Any = 0
-    obstructed = 0
-    absent = 0
     detected = 0
     path_blueTop = 0
-    path_blueBottom = 0
-    path_blueLeft = 0
-    path_blueRight = 0
     path_greyTop = 0
-    path_greyBottom = 0
-    path_greyLeft = 0
-    path_greyRight = 0
+
+class fightChatOutline:
+    detected = 0
+    path_fightTop = 0
 
 tb_Conv = textBoxOutline()
+tb_fightChat = fightChatOutline()
 
 tb_Conv.path_blueTop = os.path.join(path.Border,'blue_Top.png')
-tb_Conv.path_blueBottom = os.path.join(path.Border,'blue_Bottom.png')
-tb_Conv.path_blueLeft = os.path.join(path.Border,'blue_Left.png')
-tb_Conv.path_blueRight = os.path.join(path.Border,'blue_Right.png')
 tb_Conv.path_greyTop = os.path.join(path.Border,'grey_Top.png')
-tb_Conv.path_greyBottom = os.path.join(path.Border,'grey_Bottom.png')
-tb_Conv.path_greyLeft = os.path.join(path.Border,'grey_Left.png')
-tb_Conv.path_greyRight = os.path.join(path.Border,'grey_Right.png')
-
-def clearTextbox(outline):
-    outline.present_All = 0
-    outline.present_Any = 0
-    outline.obstructed = 0
-    outline.absent = 0
-    outline.detected = 0
+tb_fightChat.path_fightTop = os.path.join(path.Border,'fight_top.png')
 
 firstScan = 1
 
@@ -51,8 +34,6 @@ def crop_image(input_image, start_x, start_y, width, height):
     return input_image.crop(box)
 
 def detect_tb(tbReference, searchImage):
-    # Initialize text box object
-    clearTextbox(tbReference)
 
     side = pyautogui.locate(tbReference.path_blueTop, searchImage, grayscale=False)
 
@@ -64,6 +45,15 @@ def detect_tb(tbReference, searchImage):
             tbReference.detected = 1
         else:
             tbReference.detected = 0
+
+def detect_fightChat(fightChatObject, searchImage):
+
+    side = pyautogui.locate(fightChatObject.path_fightTop, searchImage, grayscale=False)
+
+    if not isinstance(side, type(None)):
+        fightChatObject.detected = 1
+    else:
+        fightChatObject.detected = 0
 
 uniqueHash = []
 hashDiffFlat_Count = 0
@@ -91,12 +81,17 @@ if __name__ == "__main__":
         screenshotWhole = pyautogui.screenshot()
 
         # Take screenshot
-        tb_Raw = pyautogui.screenshot(region=(40,760,1839,260))
+        tb_Raw = pyautogui.screenshot(region=(0,740,1920,300))
 
         detect_tb(tb_Conv, tb_Raw)
+        detect_fightChat(tb_fightChat, tb_Raw)
 
-        if tb_Conv.detected:
-            tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
+        if tb_Conv.detected or tb_fightChat.detected:
+            
+            if tb_Conv.detected:
+                tb_textRaw = crop_image(screenshotWhole, 128, 778, 1663, 224)
+            else:
+                tb_textRaw = crop_image(screenshotWhole, 64, 785, 1855-64, 995-785)
 
             if firstScan:
                 prev_hash = imagehash.phash(tb_textRaw, hash_size = 36)
