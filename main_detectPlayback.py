@@ -1,5 +1,4 @@
 
-from operator import index
 import pyautogui
 import imagehash
 import os

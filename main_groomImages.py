@@ -12,7 +12,6 @@ If a gap in numbering is determined, subsequent image pairs are renamed to fill 
 
 import os
 import path
-import main_reHashUnique
 
 FINAL_IMAGE_INDEX = 1000
 
