@@ -111,13 +111,13 @@ if __name__ == "__main__":
 
             print("tb detected")
             tb_textRaw = crop_image(tb_Raw, 88, 18, 1663, 224)
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)        
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 36)        
 
             if firstScan:
-                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+                prev_hash = imagehash.dhash(tb_textRaw, hash_size = 36)
                 firstScan = 0
 
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 16)
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 36)
             diff = new_hash - prev_hash
             print(str(new_hash) + ", " + str(prev_hash) + ", diff = " + str(diff))
             prev_hash = new_hash

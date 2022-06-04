@@ -44,7 +44,7 @@ def reHash():
             strvar = str(x)
             fp.write("%d,%s\n" % (writeIndex, strvar))
             writeIndex += 1
-    
+
     print("Done!")
 
 # MainProgram

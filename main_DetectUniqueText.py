@@ -6,6 +6,15 @@ engine = pyttsx3.init()
 import os
 import csv
 
+import socketio
+# install requests, websocket-client
+
+sio = socketio.Client()
+
+@sio.event
+def connect():
+    print("I'm connected!")
+
 LIKENESS_THRESHOLD = 24
 
 hashTable_from_csv = {}
@@ -62,6 +71,8 @@ appendNewHash = 0
 # MainProgram
 if __name__ == "__main__":
 
+    sio.connect('http://localhost:5000')
+
     # Check for previously written hash table
     if os.path.exists(path.dialogHashTable):
         
@@ -112,12 +123,14 @@ if __name__ == "__main__":
             else:
                 appendNewHash = 0                
 
+            # Check if any previously saved hash is too similar to this one
             for x in uniqueHash:
                 if abs(x - new_hash) < LIKENESS_THRESHOLD + 10:
                     appendNewHash = 0
             
             if appendNewHash:
                 uniqueHash.append(new_hash)
+                sio.emit('tick', len(uniqueHash))
 
                 newIndex = len(uniqueHash) - 1
 
