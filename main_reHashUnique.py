@@ -6,11 +6,7 @@ from numpy import append
 from PIL import Image
 import imagehash
 import os
-
-# Get the directory for this program
-path_dir = os.path.dirname(os.path.realpath(__file__))
-path_uniqueDialog = os.path.join(path_dir,'uniqueDialogue')
-path_dialogHashTable = os.path.join(path_uniqueDialog,'hashTable.csv')
+import path
 
 uniqueHash = []
 
@@ -23,7 +19,7 @@ def reHash():
     while not lastImage:
 
         fileName = str(imageIndex) + ".png"
-        path_newImage = os.path.join(path_uniqueDialog,fileName)
+        path_newImage = os.path.join(path.tbForHash,fileName)
 
         try:
             image = Image.open(path_newImage)
@@ -33,12 +29,12 @@ def reHash():
             if noImageCount > 10:
                 lastImage = 1
         else:
-            uniqueHash.append(str(imagehash.dhash(image, hash_size = 36)))
+            uniqueHash.append(str(imagehash.dhash(image, hash_size = 24)))
         finally:
             imageIndex += 1
 
     # Write hash table to file
-    with open(path_dialogHashTable, 'w') as fp:
+    with open(path.dialogHashTable, 'w') as fp:
         writeIndex = 0
         for x in uniqueHash:
             strvar = str(x)

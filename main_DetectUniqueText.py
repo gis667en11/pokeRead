@@ -5,6 +5,7 @@ import pyttsx3
 engine = pyttsx3.init()
 import os
 import csv
+from PIL import Image
 
 import socketio
 # install requests, websocket-client
@@ -15,7 +16,9 @@ sio = socketio.Client()
 def connect():
     print("I'm connected!")
 
-LIKENESS_THRESHOLD = 24
+LIKENESS_THRESHOLD = 30
+FINAL_WIDTH = 415
+FINAL_HEIGHT = 496
 
 hashTable_from_csv = {}
 
@@ -100,15 +103,44 @@ if __name__ == "__main__":
         if tb_Conv.detected or tb_fightChat.detected:
             
             if tb_Conv.detected:
-                tb_textRaw = crop_image(screenshotWhole, 128, 778, 1663, 224)
+                line_x = 128
+                line1_y = 816
+                line2_y = 909
             else:
-                tb_textRaw = crop_image(screenshotWhole, 64, 785, 1855-64, 995-785)
+                line_x = 80
+                line1_y = 822
+                line2_y = 922
+
+            oldImages = []
+            oldImages.append(crop_image(screenshotWhole, line_x, line1_y, 1660, 62))
+            oldImages.append(crop_image(screenshotWhole, line_x, line2_y, 1660, 62))
+
+            newTB = Image.new('RGBA', (1660, 124))
+
+            newTB.paste(oldImages[0], (0,0))
+            newTB.paste(oldImages[1], (0,62))
+
+            tbChunks = []
+            for x in range(4):
+                # testImage = crop_image(imageOld, FINAL_WIDTH * x, 26, FINAL_WIDTH, 175)
+                # oldImages.append(testImage)
+                # path_testFile = os.path.join(path.tbForHash,testFileName[x])
+                # testImage.save(path_testFile,"PNG")
+
+                tbChunks.append(crop_image(newTB, FINAL_WIDTH * x, 0, FINAL_WIDTH, 124))
+
+            tb_textRaw = Image.new('RGBA', (FINAL_WIDTH , FINAL_HEIGHT))
+
+            y_offset = 0
+            for im in tbChunks:
+                tb_textRaw.paste(im, (0,y_offset))
+                y_offset += im.size[1]
 
             if firstScan:
-                prev_hash = imagehash.phash(tb_textRaw, hash_size = 36)
+                prev_hash = imagehash.phash(tb_textRaw, hash_size = 24)
                 firstScan = 0
 
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 36)
+            new_hash = imagehash.dhash(tb_textRaw, hash_size = 24)
             diff = new_hash - prev_hash
             print(str(new_hash)[0:10] + ", " + str(prev_hash)[0:10] + ", diff = " + str(diff))
             prev_hash = new_hash
@@ -137,7 +169,7 @@ if __name__ == "__main__":
                 # save screenshot
                 fileName = str(newIndex) + ".png"
                 fileNameFull = str(newIndex) + "_full.png"
-                path_newImage = os.path.join(path.uniqueDialog,fileName)
+                path_newImage = os.path.join(path.tbForHash,fileName)
                 path_newImageFull = os.path.join(path.screenshotFull,fileNameFull)
 
                 tb_textRaw.save(path_newImage)
