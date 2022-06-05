@@ -7,6 +7,7 @@ hash reference image
 import os
 import path
 from PIL import Image
+import pyautogui
 
 FINAL_IMAGE_INDEX = 1000
 FINAL_WIDTH = 415
@@ -19,8 +20,8 @@ def crop_image(input_image, start_x, start_y, width, height):
 
 def textBlock_exists(index):
 
-    fileName = str(index) + ".png"
-    path_file = os.path.join(path.uniqueDialog,fileName)
+    fileName = str(index) + "_full.png"
+    path_file = os.path.join(path.screenshotFull,fileName)
     return os.path.exists(path_file)
 
 indexImage = 0
@@ -36,45 +37,55 @@ if __name__ == "__main__":
 
             imageOld = Image.open(path_oldFile)
 
-            oldImages = []
+            path_redArrow = os.path.join(path.dir,'Reference/redArrow.png')
 
-            # testFileName = [0,0,0]
-            # testFileName[0] = str(indexImage) + "_test0.png"
-            # testFileName[1] = str(indexImage) + "_test1.png"
-            # testFileName[2] = str(indexImage) + "_test2.png"
+            path_clearRedArrow = os.path.join(path.Border,'redArrow_fillWhite.png')
+            clearRedArrow = Image.open(path_clearRedArrow)
+            redArrow = pyautogui.locate(path_redArrow, imageOld, grayscale=False, confidence = 0.96)
 
-            oldImages.append(crop_image(imageOld, 128, 816, 1660, 62))
-            oldImages.append(crop_image(imageOld, 128, 909, 1660, 62))
+            if not isinstance(redArrow, type(None)):
+                print(f'image {indexImage} is at {redArrow} ')
 
-            newTB = Image.new('RGBA', (1660, 124))
+                imageOld.paste(clearRedArrow, (redArrow[0],redArrow[1]))
 
-            newTB.paste(oldImages[0], (0,0))
-            newTB.paste(oldImages[1], (0,62))
+                path_newFile = os.path.join(path.FoundArrow,fileName_old)
+                imageOld.save(path_newFile)
 
-            tbChunks = []
-            for x in range(4):
-                # testImage = crop_image(imageOld, FINAL_WIDTH * x, 26, FINAL_WIDTH, 175)
-                # oldImages.append(testImage)
-                # path_testFile = os.path.join(path.tbForHash,testFileName[x])
-                # testImage.save(path_testFile,"PNG")
+            # oldImages = []
 
-                tbChunks.append(crop_image(newTB, FINAL_WIDTH * x, 0, FINAL_WIDTH, 124))
+            # # testFileName = [0,0,0]
+            # # testFileName[0] = str(indexImage) + "_test0.png"
+            # # testFileName[1] = str(indexImage) + "_test1.png"
+            # # testFileName[2] = str(indexImage) + "_test2.png"
 
-            new_im = Image.new('RGBA', (FINAL_WIDTH , FINAL_HEIGHT))
+            # oldImages.append(crop_image(imageOld, 128, 816, 1660, 62))
+            # oldImages.append(crop_image(imageOld, 128, 909, 1660, 62))
 
-            y_offset = 0
-            for im in tbChunks:
-                new_im.paste(im, (0,y_offset))
-                y_offset += im.size[1]
+            # newTB = Image.new('RGBA', (1660, 124))
 
-            fileName_new = str(indexImage) + ".png"
-            path_newFile = os.path.join(path.tbForHash,fileName_new)
+            # newTB.paste(oldImages[0], (0,0))
+            # newTB.paste(oldImages[1], (0,62))
 
-            new_im.save(path_newFile, "PNG")
-            
+            # tbChunks = []
+            # for x in range(4):
+            #     # testImage = crop_image(imageOld, FINAL_WIDTH * x, 26, FINAL_WIDTH, 175)
+            #     # oldImages.append(testImage)
+            #     # path_testFile = os.path.join(path.tbForHash,testFileName[x])
+            #     # testImage.save(path_testFile,"PNG")
 
+            #     tbChunks.append(crop_image(newTB, FINAL_WIDTH * x, 0, FINAL_WIDTH, 124))
 
+            # new_im = Image.new('RGBA', (FINAL_WIDTH , FINAL_HEIGHT))
 
+            # y_offset = 0
+            # for im in tbChunks:
+            #     new_im.paste(im, (0,y_offset))
+            #     y_offset += im.size[1]
 
-        
+            # fileName_new = str(indexImage) + ".png"
+            # path_newFile = os.path.join(path.tbForHash,fileName_new)
+
+            # new_im.save(path_newFile, "PNG")
+
         indexImage += 1
+    print("done")

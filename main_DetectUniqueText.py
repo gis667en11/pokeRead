@@ -7,14 +7,24 @@ import os
 import csv
 from PIL import Image
 
-import socketio
-# install requests, websocket-client
+from pynput import keyboard
 
-sio = socketio.Client()
+def on_activate_8():
+    global manualTrigger8
+    manualTrigger8 = 1
 
-@sio.event
-def connect():
-    print("I'm connected!")
+def on_activate_9():
+    global manualTrigger9
+    manualTrigger9 = 1
+
+manualTrigger8 = 0
+manualTrigger9 = 0
+
+listener = keyboard.GlobalHotKeys({
+        '8': on_activate_8,
+        '9': on_activate_9})
+
+listener.start()
 
 LIKENESS_THRESHOLD = 30
 FINAL_WIDTH = 415
@@ -67,27 +77,38 @@ def detect_fightChat(fightChatObject, searchImage):
     else:
         fightChatObject.detected = 0
 
+from PIL import ImageChops
+
+def are_images_equal(img1, img2):
+    equal_size = img1.height == img2.height and img1.width == img2.width
+
+    equal_content = not ImageChops.difference(
+        img1.convert("RGB"), img2.convert("RGB")
+    ).getbbox()
+
+    return equal_size and equal_content
+
+uniqueIndex = []
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
 
 # MainProgram
-if __name__ == "__main__":
+if __name__ == "__main__":    
 
-    sio.connect('http://localhost:5000')
+    # sio.connect('http://localhost:5000')
 
     # Check for previously written hash table
     if os.path.exists(path.dialogHashTable):
         
         # Open table
         with open(path.dialogHashTable, mode='r') as file_csv:
-            reader = csv.reader(file_csv)
-            hashTable_from_csv = {rows[0]:rows[1] for rows in reader}
+            reader_obj = csv.reader(file_csv)
+            for row in reader_obj:
 
-            for x in list(hashTable_from_csv.values()):
-
-                if x != "0":
-                    uniqueHash.append(imagehash.hex_to_hash(x))
+                if row[1] != "0":
+                    uniqueHash.append(imagehash.hex_to_hash(row[1]))
+                    uniqueIndex.append(row[0])
 
     while True:
 
@@ -100,13 +121,13 @@ if __name__ == "__main__":
         detect_tb(tb_Conv, tb_Raw)
         detect_fightChat(tb_fightChat, tb_Raw)
 
-        if tb_Conv.detected or tb_fightChat.detected:
-            
-            if tb_Conv.detected:
+        if tb_Conv.detected or tb_fightChat.detected or manualTrigger8 or manualTrigger9:
+
+            if tb_Conv.detected or manualTrigger8:
                 line_x = 128
                 line1_y = 816
                 line2_y = 909
-            else:
+            if tb_fightChat.detected or manualTrigger9:
                 line_x = 80
                 line1_y = 822
                 line2_y = 922
@@ -129,18 +150,18 @@ if __name__ == "__main__":
 
                 tbChunks.append(crop_image(newTB, FINAL_WIDTH * x, 0, FINAL_WIDTH, 124))
 
-            tb_textRaw = Image.new('RGBA', (FINAL_WIDTH , FINAL_HEIGHT))
+            tb_Hashy = Image.new('RGBA', (FINAL_WIDTH , FINAL_HEIGHT))
 
             y_offset = 0
             for im in tbChunks:
-                tb_textRaw.paste(im, (0,y_offset))
+                tb_Hashy.paste(im, (0,y_offset))
                 y_offset += im.size[1]
 
             if firstScan:
-                prev_hash = imagehash.phash(tb_textRaw, hash_size = 24)
+                prev_hash = imagehash.phash(tb_Hashy, hash_size = 24)
                 firstScan = 0
 
-            new_hash = imagehash.dhash(tb_textRaw, hash_size = 24)
+            new_hash = imagehash.dhash(tb_Hashy, hash_size = 24)
             diff = new_hash - prev_hash
             print(str(new_hash)[0:10] + ", " + str(prev_hash)[0:10] + ", diff = " + str(diff))
             prev_hash = new_hash
@@ -160,9 +181,8 @@ if __name__ == "__main__":
                 if abs(x - new_hash) < LIKENESS_THRESHOLD + 10:
                     appendNewHash = 0
             
-            if appendNewHash:
+            if appendNewHash or manualTrigger8 or manualTrigger9:
                 uniqueHash.append(new_hash)
-                sio.emit('tick', len(uniqueHash))
 
                 newIndex = len(uniqueHash) - 1
 
@@ -172,7 +192,7 @@ if __name__ == "__main__":
                 path_newImage = os.path.join(path.tbForHash,fileName)
                 path_newImageFull = os.path.join(path.screenshotFull,fileNameFull)
 
-                tb_textRaw.save(path_newImage)
+                tb_Hashy.save(path_newImage)
                 screenshotWhole.save(path_newImageFull)
 
                 with open(path.dialogHashTable, 'w') as fp:
@@ -188,3 +208,8 @@ if __name__ == "__main__":
         else:
             hashDiffFlat_Count = 0
             
+        if manualTrigger8:
+            manualTrigger8 = 0
+        
+        if manualTrigger9:
+            manualTrigger9 = 0
