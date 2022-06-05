@@ -18,7 +18,7 @@ FINAL_IMAGE_INDEX = 1000
 def textBlock_exists(index):
 
     fileName = str(index) + ".png"
-    path_file = os.path.join(path.uniqueDialog,fileName)
+    path_file = os.path.join(path.tbForHash,fileName)
     return os.path.exists(path_file)
 
 def screenshotFull_exists(index):
@@ -30,7 +30,7 @@ def screenshotFull_exists(index):
 def deleteIm(index):
 
     fileName = str(index) + ".png"
-    path_file = os.path.join(path.uniqueDialog,fileName)
+    path_file = os.path.join(path.tbForHash,fileName)
     if os.path.exists(path_file):
         os.remove(path_file)
 
@@ -71,10 +71,10 @@ if __name__ == "__main__":
         if x != indexImage:
         
             fileName_old = str(x) + ".png"
-            path_oldFile = os.path.join(path.uniqueDialog,fileName_old)
+            path_oldFile = os.path.join(path.tbForHash,fileName_old)
 
             fileName_new = str(indexImage) + ".png"
-            path_newFile = os.path.join(path.uniqueDialog,fileName_new)
+            path_newFile = os.path.join(path.tbForHash,fileName_new)
 
             os.rename(path_oldFile,path_newFile)
 
