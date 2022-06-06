@@ -1,6 +1,6 @@
 
-import constants
-import path
+import pokeconstants
+import pokepath
 import pyautogui
 import imagehash
 import pyttsx3
@@ -29,28 +29,27 @@ listener = keyboard.GlobalHotKeys({
 listener.start()
 
 hashTable_from_csv = {}
-uniqueIndex = []
+
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
-im = Image.new('RGBA', (constants.SQUAREHASH_WIDTH,constants.SQUAREHASH_HEIGHT))
-prev_hash = imagehash.dhash(im, hash_size=constants.HASH_SIZE)
+im = Image.new('RGBA', (pokeconstants.SQUAREHASH_WIDTH,pokeconstants.SQUAREHASH_HEIGHT))
+prev_hash = imagehash.dhash(im, hash_size=pokeconstants.HASH_SIZE)
 
 # MainProgram
 if __name__ == "__main__":    
 
     # Check for previously written hash table
-    if os.path.exists(path.file_HashTable):
+    if os.path.exists(pokepath.file_HashTable):
         
         # Open table
-        with open(path.file_HashTable, mode='r') as file_csv:
+        with open(pokepath.file_HashTable, mode='r') as file_csv:
             reader_obj = csv.reader(file_csv)
             for row in reader_obj:
 
                 if row[1] != "0":
                     uniqueHash.append(imagehash.hex_to_hash(row[1]))
-                    uniqueIndex.append(row[0])
-        print(f"hashData uploaded; found {len(uniqueIndex)} hashes")
+        print(f"hashData uploaded; found {len(uniqueHash)} hashes")
     else:
         print("Hash file not found")
 
@@ -70,22 +69,23 @@ if __name__ == "__main__":
         if 1 in tbDetected:
 
             # Get the square textbox image
+            # This function also deletes the red square
             squareTB = imfun.getSquareTB(screenshotWhole)
 
             # Process hash of square textbox image
-            new_hash = imagehash.dhash(squareTB, constants.HASH_SIZE)
+            new_hash = imagehash.dhash(squareTB, pokeconstants.HASH_SIZE)
             diff = new_hash - prev_hash
             print(str(new_hash)[0:10] + ", " + str(prev_hash)[0:10] + ", diff = " + str(diff))
             prev_hash = new_hash
 
             # Monitor when the text box is steady,
             # Meaning new characters are not rolling out
-            if diff > constants.FLATHASH_THRESHOLD:
+            if diff > pokeconstants.FLATHASH_THRESHOLD:
                 hashDiffFlat_Count = 0
             else:
                 hashDiffFlat_Count += 1
 
-            if hashDiffFlat_Count > constants.FLATHASH_COUNTGOAL:
+            if hashDiffFlat_Count > pokeconstants.FLATHASH_COUNTGOAL:
                 appendNewHash = 1
             else:
                 appendNewHash = 0 
@@ -103,13 +103,13 @@ if __name__ == "__main__":
                 # save screenshot
                 fileName_squareTB = str(newIndex) + ".png"
                 fileName_screenshotFull = str(newIndex) + "_full.png"
-                path_file_squareTB = os.path.join(path.tbForHash,fileName_squareTB)
-                path_file_screenshotFull = os.path.join(path.screenshotFull,fileName_screenshotFull)
+                path_file_squareTB = os.path.join(pokepath.tbForHash,fileName_squareTB)
+                path_file_screenshotFull = os.path.join(pokepath.screenshotFull,fileName_screenshotFull)
 
                 squareTB.save(path_file_squareTB)
                 screenshotWhole.save(path_file_screenshotFull)
 
-                with open(path.file_HashTable, 'w') as fp:
+                with open(pokepath.file_HashTable, 'w') as fp:
 
                     writeIndex = 0
                     for x in uniqueHash:

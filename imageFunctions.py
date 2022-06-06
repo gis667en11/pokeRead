@@ -1,6 +1,6 @@
 
-import path
-import constants
+import pokepath
+import pokeconstants
 import os
 from PIL import Image
 import pyautogui
@@ -27,18 +27,18 @@ def detect_InImage(i_path, searchImage, confidenceValue = 1):
         return 0, 0
 
 def detect_blueTB(searchImage):
-    imref = Image.open(path.file_blueTop)
-    imsample = crop_image(searchImage, 200, constants.TB_CON_PIXEL_Y_DARK, 256, 4)
+    imref = Image.open(pokepath.file_blueTop)
+    imsample = crop_image(searchImage, 200, pokeconstants.TB_CON_PIXEL_Y_DARK, 256, 4)
     return are_images_equal(imref,imsample)
 
 def detect_greyTB(searchImage):
-    imref = Image.open(path.file_greyTop)
-    imsample = crop_image(searchImage, 200, constants.TB_CON_PIXEL_Y_DARK, 256, 4)
+    imref = Image.open(pokepath.file_greyTop)
+    imsample = crop_image(searchImage, 200, pokeconstants.TB_CON_PIXEL_Y_DARK, 256, 4)
     return are_images_equal(imref,imsample)
 
 def detect_fightTB(searchImage):
-    imref = Image.open(path.file_fightTop)
-    imsample = crop_image(searchImage, 200, constants.TB_FIGHT_PIXEL_Y_DARK, 256, 4)
+    imref = Image.open(pokepath.file_fightTop)
+    imsample = crop_image(searchImage, 200, pokeconstants.TB_FIGHT_PIXEL_Y_DARK, 256, 4)
     return are_images_equal(imref,imsample)
 
 '''
@@ -48,17 +48,17 @@ Returns cleansed image regardless
 '''
 def delete_redArrow(image):
 
-    redArrow = pyautogui.locate(path.file_redArrow_refWhite, image, grayscale=False, confidence = constants.RED_ARROW_SEARCH_CONFIDENCE)
+    redArrow = pyautogui.locate(pokepath.file_redArrow_refWhite, image, grayscale=False, confidence = pokeconstants.RED_ARROW_SEARCH_CONFIDENCE)
 
     if not isinstance(redArrow, type(None)):
-        eraseRedArrow = Image.open(path.file_redArrow_eraseWhite)
+        eraseRedArrow = Image.open(pokepath.file_redArrow_eraseWhite)
         image.paste(eraseRedArrow, (redArrow[0],redArrow[1]))
         return image
     
-    redArrow = pyautogui.locate(path.file_redArrow_refBlue, image, grayscale=False, confidence = 0.9)
+    redArrow = pyautogui.locate(pokepath.file_redArrow_refBlue, image, grayscale=False, confidence = 0.9)
 
     if not isinstance(redArrow, type(None)):
-        eraseRedArrow = Image.open(path.file_redArrow_eraseBlue)
+        eraseRedArrow = Image.open(pokepath.file_redArrow_eraseBlue)
         image.paste(eraseRedArrow, (redArrow[0],redArrow[1]))
         return image
 
@@ -103,12 +103,12 @@ def getSquareTB(i_image, manual_Conv = 0, manual_Fight = 0):
         tbChunks.append(
             crop_image(
                 tbStripped, 
-                constants.SQUAREHASH_WIDTH * x, 0,
-                constants.SQUAREHASH_WIDTH, tbStripped.size[1]
+                pokeconstants.SQUAREHASH_WIDTH * x, 0,
+                pokeconstants.SQUAREHASH_WIDTH, tbStripped.size[1]
             )
         )
 
-    squareTB = Image.new('RGBA', (constants.SQUAREHASH_WIDTH , constants.SQUAREHASH_HEIGHT))
+    squareTB = Image.new('RGBA', (pokeconstants.SQUAREHASH_WIDTH , pokeconstants.SQUAREHASH_HEIGHT))
 
     y_offset = 0
     for im in tbChunks:
