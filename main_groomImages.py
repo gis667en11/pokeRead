@@ -1,9 +1,9 @@
 '''
 This program searches for sequentially named images in
 
-path.uniqueDialogue
+pokepath.uniqueDialogue
 and
-path.screenshotFull
+pokepath.screenshotFull
 
 If an image, by number, is missing from either, they are both deleted.
 If a gap in numbering is determined, subsequent image pairs are renamed to fill the gap.
@@ -11,32 +11,32 @@ If a gap in numbering is determined, subsequent image pairs are renamed to fill 
 '''
 
 import os
-import path
+import pokepath
 
 FINAL_IMAGE_INDEX = 1000
 
 def textBlock_exists(index):
 
     fileName = str(index) + ".png"
-    path_file = os.path.join(path.tbForHash,fileName)
-    return os.path.exists(path_file)
+    path_file = os.pokepath.join(pokepath.tbForHash,fileName)
+    return os.pokepath.exists(path_file)
 
 def screenshotFull_exists(index):
     
     fileName = str(index) + "_full.png"
-    path_file = os.path.join(path.screenshotFull,fileName)
-    return os.path.exists(path_file)
+    path_file = os.pokepath.join(pokepath.screenshotFull,fileName)
+    return os.pokepath.exists(path_file)
 
 def deleteIm(index):
 
     fileName = str(index) + ".png"
-    path_file = os.path.join(path.tbForHash,fileName)
-    if os.path.exists(path_file):
+    path_file = os.pokepath.join(pokepath.tbForHash,fileName)
+    if os.pokepath.exists(path_file):
         os.remove(path_file)
 
     fileName = str(index) + "_full.png"
-    path_file = os.path.join(path.screenshotFull,fileName)
-    if os.path.exists(path_file):
+    path_file = os.pokepath.join(pokepath.screenshotFull,fileName)
+    if os.pokepath.exists(path_file):
         os.remove(path_file)
 
 indexImage = 0
@@ -71,18 +71,18 @@ if __name__ == "__main__":
         if x != indexImage:
         
             fileName_old = str(x) + ".png"
-            path_oldFile = os.path.join(path.tbForHash,fileName_old)
+            path_oldFile = os.pokepath.join(pokepath.tbForHash,fileName_old)
 
             fileName_new = str(indexImage) + ".png"
-            path_newFile = os.path.join(path.tbForHash,fileName_new)
+            path_newFile = os.pokepath.join(pokepath.tbForHash,fileName_new)
 
             os.rename(path_oldFile,path_newFile)
 
             fileName_old = str(x) + "_full.png"
-            path_oldFile = os.path.join(path.screenshotFull,fileName_old)
+            path_oldFile = os.pokepath.join(pokepath.screenshotFull,fileName_old)
 
             fileName_new = str(indexImage) + "_full.png"
-            path_newFile = os.path.join(path.screenshotFull,fileName_new)
+            path_newFile = os.pokepath.join(pokepath.screenshotFull,fileName_new)
 
             os.rename(path_oldFile,path_newFile)
 

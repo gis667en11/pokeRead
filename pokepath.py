@@ -2,7 +2,6 @@ import os
 
 dir = os.path.dirname(os.path.realpath(__file__))
 reference = os.path.join(dir,'Reference')
-processImages = os.path.join(dir,'processImages')
 uniqueDialog = os.path.join(dir,'uniqueDialogue')
 screenshotFull = os.path.join(uniqueDialog,'screenshotFull')
 tbForHash = os.path.join(uniqueDialog,'tbForHash')
