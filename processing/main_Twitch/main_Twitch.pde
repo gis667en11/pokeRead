@@ -1,55 +1,47 @@
-/**
- * Load and Display 
- * 
- * Images can be loaded and displayed to the screen at their actual size
- * or any other size. 
- */
 
+BetterMouse bmouse;
+Boolean firstScan = true;
 
-ONS_instance ons_leftClick = new ONS_instance();
-boolean leftPressing = false;
-boolean leftOnSliderKnob = false;
+Slider slider;
+int LEN_slider = 4;
+
+int ptr0;
 
 void setup() {
+
   paths();
-  init_Images();
+
+  bmouse = new BetterMouse();
+  
+
+  slider = new Slider(
+        // String paths to image for track and knob
+        path_file_sliderTrack, path_file_sliderKnob,
+        // how much of the track can the knob use? 0.0 - 1.0
+        0.8,
+        // orientation is ORIENT_VERT or _HOR
+        ORIENT_VERT,
+        // track center position, (x, y)
+        50.0, 250.0,
+        // starting location for knob 0.0 - 1.0
+        0.8);
+
   size(500, 500);  
 }
 
 void draw() {
-  
-  leftPressing = (mousePressed == true && (mouseButton == LEFT));
-  ons_leftClick.trigger = leftPressing;
-  ons_leftClick.run();
-  
-  if (ons_leftClick.pulse) {
-    if (
-      abs(mouseX - sliderKnob.x) < (sliderKnob.w / 2)
-      &&
-      abs(mouseY - sliderKnob.y) < (sliderKnob.h / 2)
-      ) {
-      leftOnSliderKnob = true;
-    }
-  }
-  else if (!mousePressed) {
-    leftOnSliderKnob = false;
-  }    
-  
-  if (leftOnSliderKnob) {
-    sliderKnob.y = mouseY;
-    if (sliderKnob.y > SLIDER_MAX_Y) {
-      sliderKnob.y = SLIDER_MAX_Y;
-    }
-    else if (sliderKnob.y < SLIDER_MIN_Y) {
-      sliderKnob.y = SLIDER_MIN_Y;
-    }
-  }
-  
-  buildScreen();
-}
 
-void buildScreen() {
   background(255);
-  sliderTrack.place();
-  sliderKnob.place();
+
+  // Gives the program a better mouse
+  // pulse bits and state of each button
+  bmouse.run();
+  
+
+
+  slider.run();
+
+  if (firstScan) {
+    firstScan = false;
+  }
 }
