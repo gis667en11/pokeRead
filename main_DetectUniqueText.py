@@ -1,20 +1,18 @@
 
+import pokeFunctions
 import pokeconstants
 import pokepath
 import pyautogui
+import pokeFunctions
 import imagehash
 import pyttsx3
 engine = pyttsx3.init()
 import os
-import csv
+import pokeComm
 from PIL import Image
 import imageFunctions as imfun
 from pynput import keyboard
-
-# Echo server program
-import socket
-HOST = ''                 # Symbolic name meaning all available interfaces
-PORT = 50007              # Arbitrary non-privileged port
+import jsonpickle
 
 def on_activate_8():
     global manualTrigger8
@@ -32,66 +30,26 @@ listener = keyboard.GlobalHotKeys({
         '9': on_activate_9})
 
 listener.start()
-
-hashTable_from_csv = {}
-
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
+
+# Initialize prev_hash with trash hash to avoid
+# "variable used before defined"
 im = Image.new('RGBA', (pokeconstants.SQUAREHASH_WIDTH,pokeconstants.SQUAREHASH_HEIGHT))
 prev_hash = imagehash.dhash(im, hash_size=pokeconstants.HASH_SIZE)
 
 # MainProgram
 if __name__ == "__main__":
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((HOST, PORT))
-    s.listen(1)
-    s.setblocking(False)
-    client = None
 
-    # Check for previously written hash table
-    if os.path.exists(pokepath.file_HashTable):
+    pokeComm.init_socketServer()
 
-        # Open table
-        with open(pokepath.file_HashTable, mode='r') as file_csv:
-            reader_obj = csv.reader(file_csv)
-            for row in reader_obj:
-
-                if row[1] != "0":
-                    uniqueHash.append(imagehash.hex_to_hash(row[1]))
-        print(f"hashData uploaded; found {len(uniqueHash)} hashes")
-    else:
-        print("Hash file not found")
+    pokeFunctions.pokeReadHashTable(uniqueHash)
 
     while True:
         
-        if client is None:
-            sent = 0
-            try:
-                client, addr = s.accept()
-                print('Connected by', addr)
-            except BlockingIOError:
-                pass
-        else:
-            if sent == 0:
-                message = 255
-                msgString = str("r,200,g,70,b,120") 
-                try:
-                    client.sendall(msgString.encode('ascii'))
-                except BlockingIOError:
-                    pass
-                else:
-                    sent = 1
-            try:
-                raw = client.recv(1024)
-            except:
-                pass
-            else:
-                if raw:
-                    rawString = raw.decode('utf-8')
-                    splitString = rawString.split(',')
-                    print(rawString)
+        pokeComm.hand_socketServer()
 
         # Grab whole screen
         screenshotWhole = pyautogui.screenshot()
@@ -165,3 +123,4 @@ if __name__ == "__main__":
         
         if manualTrigger9:
             manualTrigger9 = 0
+
