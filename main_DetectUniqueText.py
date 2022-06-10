@@ -75,12 +75,23 @@ if __name__ == "__main__":
                 pass
         else:
             if sent == 0:
+                message = 255
+                msgString = str("r,200,g,70,b,120") 
                 try:
-                    message = '255'
-                    client.send(b'test')
-                    sent = 1
+                    client.sendall(msgString.encode('ascii'))
                 except BlockingIOError:
                     pass
+                else:
+                    sent = 1
+            try:
+                raw = client.recv(1024)
+            except:
+                pass
+            else:
+                if raw:
+                    rawString = raw.decode('utf-8')
+                    splitString = rawString.split(',')
+                    print(rawString)
 
         # Grab whole screen
         screenshotWhole = pyautogui.screenshot()
