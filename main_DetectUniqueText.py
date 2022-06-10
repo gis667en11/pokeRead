@@ -11,6 +11,11 @@ from PIL import Image
 import imageFunctions as imfun
 from pynput import keyboard
 
+# Echo server program
+import socket
+HOST = ''                 # Symbolic name meaning all available interfaces
+PORT = 50007              # Arbitrary non-privileged port
+
 def on_activate_8():
     global manualTrigger8
     manualTrigger8 = 1
@@ -37,11 +42,17 @@ im = Image.new('RGBA', (pokeconstants.SQUAREHASH_WIDTH,pokeconstants.SQUAREHASH_
 prev_hash = imagehash.dhash(im, hash_size=pokeconstants.HASH_SIZE)
 
 # MainProgram
-if __name__ == "__main__":    
+if __name__ == "__main__":
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((HOST, PORT))
+    s.listen(1)
+    s.setblocking(False)
+    client = None
 
     # Check for previously written hash table
     if os.path.exists(pokepath.file_HashTable):
-        
+
         # Open table
         with open(pokepath.file_HashTable, mode='r') as file_csv:
             reader_obj = csv.reader(file_csv)
@@ -54,6 +65,22 @@ if __name__ == "__main__":
         print("Hash file not found")
 
     while True:
+        
+        if client is None:
+            sent = 0
+            try:
+                client, addr = s.accept()
+                print('Connected by', addr)
+            except BlockingIOError:
+                pass
+        else:
+            if sent == 0:
+                try:
+                    message = '255'
+                    client.send(b'test')
+                    sent = 1
+                except BlockingIOError:
+                    pass
 
         # Grab whole screen
         screenshotWhole = pyautogui.screenshot()
