@@ -1,5 +1,4 @@
 import json
-import functionsTiming
 import jsonpickle
 import functionsTiming as funTime
 
@@ -9,6 +8,12 @@ HOST = ''                 # Symbolic name meaning all available interfaces
 PORT = 50007              # Arbitrary non-privileged port
 SEND_PERIOD = 250
 
+class Button:
+    def __init__(self):
+        self.count = 0
+        self.prevCount = 0
+        self.pulse_Pressed = False
+
 class CommHandler:
     def __init__(self):
         self.periodTimer = funTime.TimerON()
@@ -17,6 +22,7 @@ class CommHandler:
         self.addr = 0
 
 commHandler = CommHandler()
+buttons = []
 
 class sendData:
     def __init__(self):
@@ -25,6 +31,9 @@ class sendData:
 
 def init_socketServer() :
     global commHandler
+    global buttons
+
+    buttons = [Button() for i in range(10)]
     commHandler.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     commHandler.sock.bind((HOST, PORT))
     commHandler.sock.listen(1)
@@ -33,7 +42,12 @@ def init_socketServer() :
 
 def handle_socketServer() :
     global commHandler
+    global buttons
 
+    # Initialize pulse bits
+    for b in buttons:
+        b.pulse_Pressed = False
+    
     # Attempt to allow connection with client
     if commHandler.client is None:
         try:
@@ -69,7 +83,19 @@ def handle_socketServer() :
         else:
             if raw:
                 rawString = raw.decode('utf-8')
-                print(rawString)
+                panelData = jsonpickle.decode(rawString)
+                buttonsDict = panelData.get('buttons')
+                if buttonsDict:
+                    index0 = 0
+                    for b in buttonsDict:
+                        if index0 < len(buttons):
+                            buttons[index0].count = list(b.values())[0]
+                            if buttons[index0].count != buttons[index0].prevCount:
+                                buttons[index0].pulse_Pressed = True
+                                buttons[index0].prevCount = buttons[index0].count
+                                print(f'Button {index0} pressed!')
+                            index0 = index0 + 1
+
 
 if __name__ == "__main__":
 

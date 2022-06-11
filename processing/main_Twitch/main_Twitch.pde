@@ -9,6 +9,7 @@ int currentMillis, previousMillis = 0;
 
 
 Slider[] slider = new Slider[5];
+Button[] button = new Button[5];
 
 int ptr0;
 BetterMouse bmouse;
@@ -28,8 +29,21 @@ void sendSocketData() {
     slidersJSON.setJSONObject(i, sliderJSON);
   }
   
+  JSONArray buttonsJSON = new JSONArray();
+
+  for (int i = 0; i < button.length; i++) {
+
+    JSONObject buttonJSON = new JSONObject();
+
+    buttonJSON.setInt("id", i);
+    buttonJSON.setInt("pressCount", button[i].pressCount);
+
+    buttonsJSON.setJSONObject(i, buttonJSON);
+  }
+  
   json = new JSONObject();
   json.setJSONArray("sliders", slidersJSON);
+  json.setJSONArray("buttons", buttonsJSON);
   byte[] sendData = json.toString().getBytes();
   
   myClient.write(sendData);
@@ -44,12 +58,20 @@ void setup() {
   currentMillis = millis();
   previousMillis = currentMillis;
   
+  for(int i = 0 ; i < button.length; i++){
+    button[i] = new Button(
+      // String paths to image for button
+      path_file_eyeKnob,
+      // track center position, (x, y)
+      100.0 + i * 150.0, 700);
+  }
+
   for(int i = 0 ; i < slider.length; i++){
     slider[i] = new Slider(
       // String paths to image for track and knob
-      path_file_sliderTrack_Vert,path_file_eyeKnob,
+      path_file_sliderTrack_Vert,path_file_sliderKnob,
       // how much of the track can the knob use? 0.0 - 1.0
-      0.8,
+      0.85,
       // orientation is ORIENT_VERT or _HOR
       ORIENT_VERT,
       // track center position, (x, y)
@@ -58,7 +80,7 @@ void setup() {
       0.5);
   }
         
-  size(800, 650);
+  size(800, 800);
 }
 
 void draw() {
@@ -73,6 +95,9 @@ void draw() {
   
   for (int i = 0; i < slider.length; i++) {
     slider[i].run();
+  }
+  for (int i = 0; i < button.length; i++) {
+    button[i].run();
   }
   
   if (myClient.available() > 0) { 
