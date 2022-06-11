@@ -36,7 +36,6 @@ def handle_socketServer() :
 
     # Attempt to allow connection with client
     if commHandler.client is None:
-        sent = 0
         try:
             commHandler.client, commHandler.addr = commHandler.sock.accept()
         except BlockingIOError:
@@ -55,14 +54,14 @@ def handle_socketServer() :
             print("attempting send...")
             commHandler.periodTimer.reset()            
 
-            msgString = "received" 
+            msgString = "dataReq" 
             try:
                 commHandler.client.sendall(msgString.encode('ascii'))
             except BlockingIOError:
                 commHandler.client = None
             except ConnectionAbortedError:
                 commHandler.client = None
-        
+
         try:
             raw = commHandler.client.recv(1024)
         except:
@@ -70,7 +69,7 @@ def handle_socketServer() :
         else:
             if raw:
                 rawString = raw.decode('utf-8')
-                # print(rawString)
+                print(rawString)
 
 if __name__ == "__main__":
 
