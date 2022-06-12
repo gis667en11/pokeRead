@@ -3,10 +3,11 @@ import processing.net.*;
 
 Boolean firstScan = true;
 BetterImage pikaFrame;
+Lamp lamp_question;
 Client myClient; 
 String raw;
 int currentMillis = 0;
-int captureCount = 0;
+int captureCount, prevCaptureCount = 0;
 Boolean flatHash, tbBlue, tbGrey, tbFight = false;
 Boolean vol_sendSocketData = false;
 PFont counterFont;
@@ -82,6 +83,8 @@ void sendSocketData() {
 }
 
 void setup() {
+
+  size(800, 800);
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
@@ -113,8 +116,12 @@ void setup() {
       // starting location for knob 0.0 - 1.0
       0.5);
   }
-        
-  size(800, 800);
+
+  lamp_question = Lamp(
+    path_file_iconQuestion,
+    width - width / 4.0, height - height / 4.0
+  );
+
 }
 
 void draw() {
@@ -148,7 +155,15 @@ void draw() {
     sendSocketData();
   }
 
+  if (captureCount != prevCaptureCount) {
+    lamp_question.trigger(1000);
+  }
+
+  lamp_question.run();
+
   if (firstScan) {
     firstScan = false;
   }
+
+  prevCaptureCount = captureCount;
 }

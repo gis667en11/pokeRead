@@ -5,6 +5,7 @@ String path_file_pikaKnob;
 String path_file_sliderTrack_Vert;
 String path_file_sliderTrack_Hor;
 String path_file_pikaFrame;
+String path_file_iconQuestion;
 
  
 void paths() {
@@ -14,4 +15,5 @@ void paths() {
   path_file_sliderTrack_Vert = path_data + "sliderTrack_Vert_long.png";
   path_file_sliderTrack_Hor = path_data + "sliderTrack_Hor_long.png";
   path_file_pikaFrame = path_data + "pikaFrame.png";
+  path_file_iconQuestion = path_data + "icon_Question.png";
 }
