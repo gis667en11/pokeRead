@@ -47,6 +47,8 @@ if __name__ == "__main__":
 
     pokeFunctions.pokeReadHashTable(uniqueHash)
 
+    pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
+
     while True:
 
         # Grab whole screen
@@ -117,9 +119,6 @@ if __name__ == "__main__":
                         strvar = str(x)
                         fp.write("%d,%s\n" % (writeIndex, strvar))
                         writeIndex += 1
-                
-                engine.say('caught')
-                engine.runAndWait()
         else:
             hashDiffFlat_Count = 0
             pokeComm.commHandler.hashFlat = False

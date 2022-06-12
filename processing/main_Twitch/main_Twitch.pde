@@ -5,7 +5,7 @@ Boolean firstScan = true;
 BetterImage pikaFrame;
 Client myClient; 
 String raw;
-int currentMillis, previousMillis = 0;
+int currentMillis = 0;
 int captureCount = 0;
 Boolean flatHash, tbBlue, tbGrey, tbFight = false;
 Boolean vol_sendSocketData = false;
@@ -85,14 +85,12 @@ void setup() {
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
-  
   myClient = new Client(this, "localhost", 50007); 
   paths();
   bmouse = new BetterMouse();
   pikaFrame = new BetterImage(path_file_pikaFrame);
   
   currentMillis = millis();
-  previousMillis = currentMillis;
   
   for(int i = 0 ; i < button.length; i++){
     button[i] = new Button(
@@ -120,6 +118,8 @@ void setup() {
 }
 
 void draw() {
+
+  currentMillis = millis();
 
   background(127);
   pikaFrame.place(CENTER, width - width / 3 , height / 3);
