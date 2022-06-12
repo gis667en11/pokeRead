@@ -2,21 +2,20 @@ class Lamp {
     int state_Triggered = 1;
     int state_Running = 2;
     int state_Idle = 3;
-    BetterImage im_state0;
-    BetterImage im_state1;
+    BetterImage im_icon;
+    BetterImage im_iconGrey;
     private int state;
     private int startMillis;
     int fadeDuration_ms;
     float xCent, yCent;
 
-
-    Button (String i_path_imState0, i_path_imState1,
+    Button (String i_path_icon, float i_lampDiameter,
             float i_xCenter, float i_yCenter) 
             {
             xCent = i_xCenter;
             yCent = i_yCenter;
-            im_state0 = new BetterImage(i_path_imState0);
-            im_state1 = new BetterImage(i_path_imState1);
+            im_icon = new BetterImage(i_path_imState0);
+            im_iconGrey = new BetterImage(im_icon.im);
             state = state_Idle;
             startMillis = currentMillis;
             fadeDuration_ms = 1000;

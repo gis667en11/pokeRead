@@ -7,6 +7,12 @@ class BetterImage {
     w = im.width;
     h = im.height;
   }
+  BetterImage(PImage i_im) {
+    im = i_im;
+    w = im.width;
+    h = im.height;
+  }
+}
 
   void place(int coordinateMode, float i_x0, float i_y0, float i_x1, float i_y1) {
 
