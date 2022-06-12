@@ -1,4 +1,3 @@
-import json
 import jsonpickle
 import functionsTiming as funTime
 
@@ -73,7 +72,6 @@ def handle_socketServer() :
 
         if commHandler.periodTimer.done:
 
-            print("attempting send...")
             commHandler.periodTimer.reset()            
 
             msgPayload = {}
@@ -85,6 +83,7 @@ def handle_socketServer() :
             msgPayload['tbFight'] = commHandler.tbFight
             jsonDumpStr = jsonpickle.dumps(msgPayload)
             jsonDumpBytes = jsonDumpStr.encode('UTF-8')
+            print(jsonDumpStr)
 
             try:
                 commHandler.client.sendall(jsonDumpBytes)
@@ -116,7 +115,14 @@ if __name__ == "__main__":
 
     init_socketServer()
 
+    incrementCountTimer = funTime.TimerON()
+    incrementCountTimer.preset = 2000
+
     while True:
+        
+        if incrementCountTimer.run(1):
+            incrementCountTimer.reset()
+            commHandler.imageCaptureCount += 1
 
         handle_socketServer()
         

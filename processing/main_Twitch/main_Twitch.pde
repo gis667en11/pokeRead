@@ -2,16 +2,17 @@
 import processing.net.*; 
 
 Boolean firstScan = true;
-BetterImage pika;
+BetterImage pikaFrame;
 Client myClient; 
 String raw;
 int currentMillis, previousMillis = 0;
 int captureCount = 0;
 Boolean flatHash, tbBlue, tbGrey, tbFight = false;
 Boolean vol_sendSocketData = false;
+PFont counterFont;
 
-Slider[] slider = new Slider[5];
-Button[] button = new Button[5];
+Slider[] slider = new Slider[1];
+Button[] button = new Button[1];
 
 int ptr0;
 BetterMouse bmouse;
@@ -22,7 +23,6 @@ void readSocketData() {
   
   if (myClient.available() > 0) { 
     raw = myClient.readString();
-    print(raw);
     
     JSONObject json = parseJSONObject(raw);
     if (json == null) {
@@ -39,6 +39,9 @@ void readSocketData() {
       tbBlue = json.getBoolean("tbBlue");
       tbGrey = json.getBoolean("tbGrey");
       tbFight = json.getBoolean("tbFight");
+      
+      print("dataReq: " + str(vol_sendSocketData) + ", captureCount: " + str(captureCount)
+            + ", tbBlue: " + str(tbBlue) + ", tbGrey: " + str(tbGrey) + ", tbFight: " + str(tbFight) + "\n");
     }
   }
 }
@@ -80,9 +83,13 @@ void sendSocketData() {
 
 void setup() {
   
+  counterFont = createFont("Anton-Regular.ttf", 110);
+  
+  
   myClient = new Client(this, "localhost", 50007); 
   paths();
   bmouse = new BetterMouse();
+  pikaFrame = new BetterImage(path_file_pikaFrame);
   
   currentMillis = millis();
   previousMillis = currentMillis;
@@ -90,7 +97,7 @@ void setup() {
   for(int i = 0 ; i < button.length; i++){
     button[i] = new Button(
       // String paths to image for button
-      path_file_eyeKnob,
+      path_file_pikaKnob,
       // track center position, (x, y)
       100.0 + i * 150.0, 700);
   }
@@ -98,7 +105,7 @@ void setup() {
   for(int i = 0 ; i < slider.length; i++){
     slider[i] = new Slider(
       // String paths to image for track and knob
-      path_file_sliderTrack_Vert,path_file_sliderKnob,
+      path_file_sliderTrack_Vert,path_file_pikaKnob,
       // how much of the track can the knob use? 0.0 - 1.0
       0.85,
       // orientation is ORIENT_VERT or _HOR
@@ -113,10 +120,15 @@ void setup() {
 }
 
 void draw() {
-  
-  boolean vol_sendSocketData = false;
 
   background(127);
+  pikaFrame.place(CENTER, width - width / 3 , height / 3);
+  
+  textFont(counterFont);
+  fill(0);
+  textAlign(CENTER,CENTER);
+  text(captureCount, pikaFrame.xCenter, pikaFrame.yCenter - 10);
+  
 
   // Gives the program a better mouse
   // pulse bits and state of each button
@@ -132,6 +144,7 @@ void draw() {
   readSocketData();
 
   if (vol_sendSocketData) {
+    print("attempting send");
     sendSocketData();
   }
 
