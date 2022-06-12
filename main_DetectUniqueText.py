@@ -48,21 +48,22 @@ if __name__ == "__main__":
     pokeFunctions.pokeReadHashTable(uniqueHash)
 
     while True:
-        
-        pokeComm.hand_socketServer()
 
         # Grab whole screen
         screenshotWhole = pyautogui.screenshot()
 
         # Check if text box is on screen
         tbDetected = []
-        tbDetected.append(imfun.detect_blueTB(screenshotWhole))
-        tbDetected.append(imfun.detect_greyTB(screenshotWhole))
-        tbDetected.append(imfun.detect_fightTB(screenshotWhole))
+        pokeComm.commHandler.tbDialogue = imfun.detect_blueTB(screenshotWhole)
+        pokeComm.commHandler.tbGrey = imfun.detect_greyTB(screenshotWhole)
+        pokeComm.commHandler.tbFight = imfun.detect_fightTB(screenshotWhole)
+        tbDetected.append(pokeComm.commHandler.tbDialogue)
+        tbDetected.append(pokeComm.commHandler.tbGrey)
+        tbDetected.append(pokeComm.commHandler.tbFight)
 
         # If any textbox is present, we must determine if it's new
         # in order to capture it and it's hash
-        if 1 in tbDetected:
+        if True in tbDetected:
 
             # Get the square textbox image
             # This function also deletes the red square
@@ -82,19 +83,23 @@ if __name__ == "__main__":
                 hashDiffFlat_Count += 1
 
             if hashDiffFlat_Count > pokeconstants.FLATHASH_COUNTGOAL:
-                appendNewHash = 1
+                pokeComm.commHandler.hashFlat = True
             else:
-                appendNewHash = 0 
+                pokeComm.commHandler.hashFlat = False 
 
             # Check if this text was previously recorded
             for x in uniqueHash:
                 if x == new_hash:
                     appendNewHash = 0
-            
+                    pokeComm.commHandler.hashMatch = True
+                else:
+                    pokeComm.commHandler.hashMatch = False
             if appendNewHash:
                 uniqueHash.append(new_hash)
 
                 newIndex = len(uniqueHash) - 1
+
+                pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
 
                 # save screenshot
                 fileName_squareTB = str(newIndex) + ".png"
@@ -117,6 +122,8 @@ if __name__ == "__main__":
                 engine.runAndWait()
         else:
             hashDiffFlat_Count = 0
+            pokeComm.commHandler.hashFlat = False
+            pokeComm.commHandler.hashMatch = False
             
         if manualTrigger8:
             manualTrigger8 = 0
@@ -124,3 +131,4 @@ if __name__ == "__main__":
         if manualTrigger9:
             manualTrigger9 = 0
 
+        pokeComm.handle_socketServer()

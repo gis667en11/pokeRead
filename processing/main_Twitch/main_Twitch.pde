@@ -1,4 +1,4 @@
-JSONObject json;
+
 import processing.net.*; 
 
 Boolean firstScan = true;
@@ -6,13 +6,42 @@ BetterImage pika;
 Client myClient; 
 String raw;
 int currentMillis, previousMillis = 0;
-
+int captureCount = 0;
+Boolean flatHash, tbBlue, tbGrey, tbFight = false;
+Boolean vol_sendSocketData = false;
 
 Slider[] slider = new Slider[5];
 Button[] button = new Button[5];
 
 int ptr0;
 BetterMouse bmouse;
+
+void readSocketData() {
+  
+  vol_sendSocketData = false;
+  
+  if (myClient.available() > 0) { 
+    raw = myClient.readString();
+    print(raw);
+    
+    JSONObject json = parseJSONObject(raw);
+    if (json == null) {
+      println("JSONObject could not be parsed");
+      flatHash = false;
+      tbBlue = false;
+      tbGrey = false;
+      tbFight = false;
+    }
+    else {
+      vol_sendSocketData = json.getBoolean("dataReq");
+      flatHash = json.getBoolean("flatHash");
+      captureCount = json.getInt("captureCount");
+      tbBlue = json.getBoolean("tbBlue");
+      tbGrey = json.getBoolean("tbGrey");
+      tbFight = json.getBoolean("tbFight");
+    }
+  }
+}
 
 void sendSocketData() {
   JSONObject json = new JSONObject();
@@ -100,15 +129,8 @@ void draw() {
     button[i].run();
   }
   
-  if (myClient.available() > 0) { 
-    raw = myClient.readString();
-    println(raw);
-    if (raw.equals("dataReq")) {
-      vol_sendSocketData = true;
-      println("sending data +++++");
-    }
-  }
-  
+  readSocketData();
+
   if (vol_sendSocketData) {
     sendSocketData();
   }

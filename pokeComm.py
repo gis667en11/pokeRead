@@ -8,6 +8,7 @@ HOST = ''                 # Symbolic name meaning all available interfaces
 PORT = 50007              # Arbitrary non-privileged port
 SEND_PERIOD = 250
 
+
 class Button:
     def __init__(self):
         self.count = 0
@@ -20,6 +21,12 @@ class CommHandler:
         self.sock = 0
         self.client = 0
         self.addr = 0
+        self.imageCaptureCount = 0
+        self.hashFlat = False
+        self.hashMatch = False
+        self.tbDialogue = False
+        self.tbGrey = False
+        self.tbFight = False
 
 commHandler = CommHandler()
 buttons = []
@@ -43,6 +50,7 @@ def init_socketServer() :
 def handle_socketServer() :
     global commHandler
     global buttons
+    global imageCaptureCount
 
     # Initialize pulse bits
     for b in buttons:
@@ -68,12 +76,19 @@ def handle_socketServer() :
             print("attempting send...")
             commHandler.periodTimer.reset()            
 
-            msgString = "dataReq" 
+            msgPayload = {}
+            msgPayload['dataReq'] = True
+            msgPayload['captureCount'] = commHandler.imageCaptureCount
+            msgPayload['flatHash'] = commHandler.hashFlat
+            msgPayload['tbBlue'] = commHandler.tbDialogue
+            msgPayload['tbGrey'] = commHandler.tbGrey
+            msgPayload['tbFight'] = commHandler.tbFight
+            jsonDumpStr = jsonpickle.dumps(msgPayload)
+            jsonDumpBytes = jsonDumpStr.encode('UTF-8')
+
             try:
-                commHandler.client.sendall(msgString.encode('ascii'))
-            except BlockingIOError:
-                commHandler.client = None
-            except ConnectionAbortedError:
+                commHandler.client.sendall(jsonDumpBytes)
+            except:
                 commHandler.client = None
 
         try:
