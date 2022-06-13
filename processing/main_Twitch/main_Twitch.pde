@@ -2,7 +2,7 @@ import processing.net.*;
 
 Boolean firstScan = true;
 BetterImage pikaFrame;
-// Lamp lamp_question;
+Lamp lamp_question, lamp_match, lamp_new, lamp_gray, lamp_blue, lamp_fight;
 Client myClient; 
 String raw;
 int currentMillis = 0;
@@ -49,17 +49,17 @@ void readSocketData() {
 void sendSocketData() {
   JSONObject json = new JSONObject();
   
-  JSONArray slidersJSON = new JSONArray();
+  //JSONArray slidersJSON = new JSONArray();
 
-  for (int i = 0; i < slider.length; i++) {
+  //for (int i = 0; i < slider.length; i++) {
 
-    JSONObject sliderJSON = new JSONObject();
+  //  JSONObject sliderJSON = new JSONObject();
 
-    sliderJSON.setInt("id", i);
-    sliderJSON.setFloat("knobValue", slider[i].knobValue);
+  //  sliderJSON.setInt("id", i);
+  //  sliderJSON.setFloat("knobValue", slider[i].knobValue);
 
-    slidersJSON.setJSONObject(i, sliderJSON);
-  }
+  //  slidersJSON.setJSONObject(i, sliderJSON);
+  //}
   
   JSONArray buttonsJSON = new JSONArray();
 
@@ -74,7 +74,7 @@ void sendSocketData() {
   }
   
   json = new JSONObject();
-  json.setJSONArray("sliders", slidersJSON);
+  //json.setJSONArray("sliders", slidersJSON);
   json.setJSONArray("buttons", buttonsJSON);
   byte[] sendData = json.toString().getBytes();
   
@@ -83,7 +83,7 @@ void sendSocketData() {
 
 void setup() {
 
-  size(800, 800);
+  size(500, 1000);
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
@@ -94,35 +94,60 @@ void setup() {
   bmouse = new BetterMouse();
   
   pikaFrame = new BetterImage(path_file_pikaFrame);
+  pikaFrame.place(CENTER, width / 2, width / 2);
   
   currentMillis = millis();
   
-  for(int i = 0 ; i < button.length; i++){
-    button[i] = new Button(
+    button[0] = new Button(
       // String paths to image for button
       path_file_pikaKnob,
       // track center position, (x, y)
-      100.0 + i * 150.0, 700);
-  }
+      width / 2, 918 );
 
-  for(int i = 0 ; i < slider.length; i++){
-    slider[i] = new Slider(
-      // String paths to image for track and knob
-      path_file_sliderTrack_Vert,path_file_pikaKnob,
-      // how much of the track can the knob use? 0.0 - 1.0
-      0.85,
-      // orientation is ORIENT_VERT or _HOR
-      ORIENT_VERT,
-      // track center position, (x, y)
-      100.0 + i * 150.0, 250.0,
-      // starting location for knob 0.0 - 1.0
-      0.5);
-  }
 
-  //lamp_question = new Lamp(
-  //  path_file_iconQuestion,
-  //  width - width / 4.0, height - height / 4.0
-  //);
+//  for(int i = 0 ; i < slider.length; i++){
+//    slider[i] = new Slider(
+//      // String paths to image for track and knob
+//      path_file_sliderTrack_Vert,path_file_pikaKnob,
+//      // how much of the track can the knob use? 0.0 - 1.0
+//      0.85,
+//      // orientation is ORIENT_VERT or _HOR
+//      ORIENT_VERT,
+//      // track center position, (x, y)
+//      100.0 + i * 150.0, 250.0,
+//      // starting location for knob 0.0 - 1.0
+//      0.5);
+//  }
+
+  lamp_new = new Lamp(
+    path_file_iconNew,
+    width - 105.0, pikaFrame.y1 + 275.0
+  );
+  
+  lamp_match = new Lamp(
+    path_file_iconMatch,
+    width / 2.0, pikaFrame.y1 + 275.0
+  );
+  
+  lamp_question = new Lamp(
+    path_file_iconQuestion,
+    105.0, pikaFrame.y1 + 275.0
+  );
+  
+  lamp_gray = new Lamp(
+    path_file_iconGrey,
+    105.0, pikaFrame.y1 + 105.0
+  );
+  
+  lamp_blue = new Lamp(
+    path_file_iconBlue,
+    width / 2.0, pikaFrame.y1 + 105.0
+  );
+  
+  lamp_fight = new Lamp(
+    path_file_iconFight,
+    width - 105.0, pikaFrame.y1 + 105.0
+  );
 
 }
 
@@ -130,8 +155,8 @@ void draw() {
 
   currentMillis = millis();
 
-  background(127);
-  pikaFrame.place(CENTER, width - width / 3 , height / 3);
+  background(0xFCD883);
+  pikaFrame.place(CENTER, width / 2, width / 2);
   
   textFont(counterFont);
   fill(0);
@@ -143,9 +168,9 @@ void draw() {
   // pulse bits and state of each button
   bmouse.run();
   
-  for (int i = 0; i < slider.length; i++) {
-    slider[i].run();
-  }
+  //for (int i = 0; i < slider.length; i++) {
+  //  slider[i].run();
+  //}
   for (int i = 0; i < button.length; i++) {
     button[i].run();
   }
@@ -153,15 +178,42 @@ void draw() {
   readSocketData();
 
   if (vol_sendSocketData) {
-    print("attempting send");
     sendSocketData();
   }
+  
+  if ( tbBlue != null && tbGrey != null && tbFight != null
+        && flatHash != null) {
 
-  //if (captureCount != prevCaptureCount) {
-  //  lamp_question.trigger(1000);
-  //}
+    if (captureCount != prevCaptureCount && (tbBlue || tbGrey || tbFight)) {
+      lamp_new.trigger(1000);
+    }
+    
+    if (captureCount == prevCaptureCount && lamp_new.state != lamp_new.state_Running
+        && (tbBlue || tbGrey || tbFight) && flatHash) {
+      lamp_match.trigger(50);
+    }
+    
+    if (!flatHash && (tbBlue || tbGrey || tbFight)) {
+      lamp_question.trigger(50);
+    }
+    
+    if (tbGrey) {
+      lamp_gray.trigger(50);
+    }
+    if (tbBlue) {
+      lamp_blue.trigger(50);
+    }
+    if (tbFight) {
+      lamp_fight.trigger(50);
+    }
+  }
 
-  //lamp_question.run();
+  lamp_gray.run();
+  lamp_blue.run();
+  lamp_fight.run();
+  lamp_question.run();
+  lamp_match.run();
+  lamp_new.run();
 
   if (firstScan) {
     firstScan = false;

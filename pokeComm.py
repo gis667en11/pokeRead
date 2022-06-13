@@ -5,7 +5,7 @@ import functionsTiming as funTime
 import socket
 HOST = ''                 # Symbolic name meaning all available interfaces
 PORT = 50007              # Arbitrary non-privileged port
-SEND_PERIOD = 250
+SEND_PERIOD = 100
 
 
 class Button:
@@ -82,7 +82,6 @@ def handle_socketServer() :
             msgPayload['tbFight'] = commHandler.tbFight
             jsonDumpStr = jsonpickle.dumps(msgPayload)
             jsonDumpBytes = jsonDumpStr.encode('UTF-8')
-            print(jsonDumpStr)
 
             try:
                 commHandler.client.sendall(jsonDumpBytes)

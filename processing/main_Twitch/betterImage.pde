@@ -7,12 +7,6 @@ class BetterImage {
     w = im.width;
     h = im.height;
   }
-  BetterImage(PImage i_im) {
-    im = i_im;
-    w = im.width;
-    h = im.height;
-  }
-}
 
   void place(int coordinateMode, float i_x0, float i_y0, float i_x1, float i_y1) {
 
@@ -45,10 +39,10 @@ class BetterImage {
       image(im, i_x, i_y);
       xCenter = i_x;
       yCenter = i_y;
-      x0 = i_x - (w / 2);
-      y0 = i_y - (h / 2);
-      x1 = i_x + (w / 2);
-      y1 = i_y + (h / 2);
+      x0 = i_x - (w / 2.0);
+      y0 = i_y - (h / 2.0);
+      x1 = i_x + (w / 2.0);
+      y1 = i_y + (h / 2.0);
     }
     if (coordinateMode == CORNER) {
       image(im, i_x, i_y);

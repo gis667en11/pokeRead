@@ -74,7 +74,6 @@ if __name__ == "__main__":
             # Process hash of square textbox image
             new_hash = imagehash.dhash(squareTB, pokeconstants.HASH_SIZE)
             diff = new_hash - prev_hash
-            print(str(new_hash)[0:10] + ", " + str(prev_hash)[0:10] + ", diff = " + str(diff))
             prev_hash = new_hash
 
             # Monitor when the text box is steady,
@@ -92,11 +91,13 @@ if __name__ == "__main__":
             # Check if this text was previously recorded
             for x in uniqueHash:
                 if x == new_hash:
-                    appendNewHash = 0
                     pokeComm.commHandler.hashMatch = True
                 else:
                     pokeComm.commHandler.hashMatch = False
-            if appendNewHash:
+
+            if ((not pokeComm.commHandler.hashMatch or pokeComm.buttons[0].pulse_Pressed) 
+                and pokeComm.commHandler.hashFlat):
+                
                 uniqueHash.append(new_hash)
 
                 newIndex = len(uniqueHash) - 1
