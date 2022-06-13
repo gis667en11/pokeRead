@@ -1,9 +1,8 @@
-
-import processing.net.*; 
+import processing.net.*;
 
 Boolean firstScan = true;
 BetterImage pikaFrame;
-Lamp lamp_question;
+// Lamp lamp_question;
 Client myClient; 
 String raw;
 int currentMillis = 0;
@@ -88,9 +87,12 @@ void setup() {
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
-  myClient = new Client(this, "localhost", 50007); 
+  myClient = new Client(this, "localhost", 50007);
+  
   paths();
+  
   bmouse = new BetterMouse();
+  
   pikaFrame = new BetterImage(path_file_pikaFrame);
   
   currentMillis = millis();
@@ -117,10 +119,10 @@ void setup() {
       0.5);
   }
 
-  lamp_question = Lamp(
-    path_file_iconQuestion,
-    width - width / 4.0, height - height / 4.0
-  );
+  //lamp_question = new Lamp(
+  //  path_file_iconQuestion,
+  //  width - width / 4.0, height - height / 4.0
+  //);
 
 }
 
@@ -155,11 +157,11 @@ void draw() {
     sendSocketData();
   }
 
-  if (captureCount != prevCaptureCount) {
-    lamp_question.trigger(1000);
-  }
+  //if (captureCount != prevCaptureCount) {
+  //  lamp_question.trigger(1000);
+  //}
 
-  lamp_question.run();
+  //lamp_question.run();
 
   if (firstScan) {
     firstScan = false;
