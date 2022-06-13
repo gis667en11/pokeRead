@@ -49,7 +49,6 @@ def init_socketServer() :
 def handle_socketServer() :
     global commHandler
     global buttons
-    global imageCaptureCount
 
     # Initialize pulse bits
     for b in buttons:

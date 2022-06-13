@@ -22,9 +22,9 @@ def are_images_equal(img1, img2):
 def detect_InImage(i_path, searchImage, confidenceValue = 1):
     searchResult = pyautogui.locate(i_path, searchImage, grayscale=False, confidence = confidenceValue)
     if not isinstance(searchResult, type(None)):
-        return 1, searchResult
+        return True, searchResult
     else:
-        return 0, 0
+        return False, None
 
 def detect_blueTB(searchImage):
     imref = Image.open(pokepath.file_blueTop)
