@@ -83,7 +83,7 @@ void sendSocketData() {
 
 void setup() {
 
-  size(500, 1000);
+  size(1920, 437);
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
@@ -94,7 +94,7 @@ void setup() {
   bmouse = new BetterMouse();
   
   pikaFrame = new BetterImage(path_file_pikaFrame);
-  pikaFrame.place(CENTER, width / 2, width / 2);
+  pikaFrame.place(CENTER, height / 2, height / 2);
   
   currentMillis = millis();
   
@@ -102,7 +102,7 @@ void setup() {
       // String paths to image for button
       path_file_pikaKnob,
       // track center position, (x, y)
-      width / 2, 918 );
+      1300 , height / 2.0 );
 
 
 //  for(int i = 0 ; i < slider.length; i++){
@@ -119,34 +119,40 @@ void setup() {
 //      0.5);
 //  }
 
-  lamp_new = new Lamp(
-    path_file_iconNew,
-    width - 105.0, pikaFrame.y1 + 275.0
-  );
   
-  lamp_match = new Lamp(
-    path_file_iconMatch,
-    width / 2.0, pikaFrame.y1 + 275.0
-  );
   
-  lamp_question = new Lamp(
-    path_file_iconQuestion,
-    105.0, pikaFrame.y1 + 275.0
-  );
+  
+  
+  float offset0 = 90;
   
   lamp_gray = new Lamp(
     path_file_iconGrey,
-    105.0, pikaFrame.y1 + 105.0
+    pikaFrame.w + 105.0, height / 2.0 - offset0
   );
   
   lamp_blue = new Lamp(
     path_file_iconBlue,
-    width / 2.0, pikaFrame.y1 + 105.0
+    pikaFrame.w + 105.0 + 200 * 1, height / 2.0 - offset0
   );
   
   lamp_fight = new Lamp(
     path_file_iconFight,
-    width - 105.0, pikaFrame.y1 + 105.0
+    pikaFrame.w + 105.0 + 200 * 2, height / 2.0 - offset0
+  );
+  
+  lamp_question = new Lamp(
+    path_file_iconQuestion,
+    pikaFrame.w + 205, height / 2.0 + offset0
+  );
+  
+  lamp_match = new Lamp(
+    path_file_iconMatch,
+    pikaFrame.w + 205.0 + 200 * 1, height / 2.0 + offset0
+  );
+  
+  lamp_new = new Lamp(
+    path_file_iconNew,
+    pikaFrame.w + 205.0 + 200 * 2, height / 2.0 + offset0
   );
 
 }
@@ -156,7 +162,7 @@ void draw() {
   currentMillis = millis();
 
   background(0xFCD883);
-  pikaFrame.place(CENTER, width / 2, width / 2);
+  pikaFrame.place(CENTER, height / 2, height / 2);
   
   textFont(counterFont);
   fill(0);

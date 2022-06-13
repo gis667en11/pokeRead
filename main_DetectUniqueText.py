@@ -12,7 +12,7 @@ import pokeComm
 from PIL import Image
 import imageFunctions as imfun
 from pynput import keyboard
-import jsonpickle
+from audacityPipe import do_command
 
 def on_activate_8():
     global manualTrigger8
@@ -33,6 +33,14 @@ listener.start()
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
+
+# These states are for the audacity recording tools
+recordState = 0
+STATE_RECORDIDLE = 0
+STATE_RECORDREADY = 1
+STATE_RECORDING = 2
+STATE_RECORDINGCOMPLETE = 3
+STATE_PLAYBACK = 4
 
 # Initialize prev_hash with trash hash to avoid
 # "variable used before defined"
@@ -104,6 +112,8 @@ if __name__ == "__main__":
 
                 pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
 
+                recordState = STATE_RECORDREADY
+
                 # save screenshot
                 fileName_squareTB = str(newIndex) + ".png"
                 fileName_screenshotFull = str(newIndex) + "_full.png"
@@ -120,11 +130,46 @@ if __name__ == "__main__":
                         strvar = str(x)
                         fp.write("%d,%s\n" % (writeIndex, strvar))
                         writeIndex += 1
+
         else:
             hashDiffFlat_Count = 0
             pokeComm.commHandler.hashFlat = False
             pokeComm.commHandler.hashMatch = False
-            
+
+# Audacity control
+
+        # Press record button
+        if (( recordState == STATE_RECORDREADY or recordState == STATE_RECORDINGCOMPLETE) 
+            and pokeComm.buttons[1].pulse_Pressed):
+            do_command('SelectAll')
+            do_command('Delete')
+            do_command('Record1stChoice')
+            recordState = STATE_RECORDING
+        
+        # Stop recording
+        elif recordState == STATE_RECORDING and pokeComm.buttons[1].pulse_Pressed:
+            do_command('Pause')
+            recordState = STATE_RECORDINGCOMPLETE
+
+        # Trigger playback
+        if recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[2].pulse_Pressed:
+            do_command('Play')
+            recordState = STATE_PLAYBACK
+
+        # Stop playback
+        if recordState == STATE_PLAYBACK and pokeComm.buttons[2].pulse_Pressed:
+            do_command('Pause')
+            recordState = STATE_RECORDINGCOMPLETE
+
+        # Save audio and export
+        if recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[3].pulse_Pressed:
+            do_command('SelectAll')
+            fileName_audio = pokepath.audio + '/' + str(newIndex) + '.wav'
+            do_command('Export2: ' + fileName_audio)
+            do_command('SelectAll')
+            do_command('Delete')
+            recordState = STATE_RECORDIDLE
+
         if manualTrigger8:
             manualTrigger8 = 0
         
