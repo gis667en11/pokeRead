@@ -13,25 +13,8 @@ import os
 import pokeComm
 from PIL import Image
 import imageFunctions as imfun
-from pynput import keyboard
 from audacityPipe import do_command
 
-def on_activate_8():
-    global manualTrigger8
-    manualTrigger8 = 1
-
-def on_activate_9():
-    global manualTrigger9
-    manualTrigger9 = 1
-
-manualTrigger8 = 0
-manualTrigger9 = 0
-
-listener = keyboard.GlobalHotKeys({
-        '8': on_activate_8,
-        '9': on_activate_9})
-
-listener.start()
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
@@ -173,11 +156,5 @@ if __name__ == "__main__":
             do_command('SelectAll')
             do_command('Delete')
             pokeComm.commHandler.recordState = STATE_RECORDIDLE
-
-        if manualTrigger8:
-            manualTrigger8 = 0
-        
-        if manualTrigger9:
-            manualTrigger9 = 0
 
         pokeComm.handle_socketServer()
