@@ -10,9 +10,16 @@ int captureCount, prevCaptureCount = 0;
 Boolean flatHash, tbBlue, tbGrey, tbFight = false;
 Boolean vol_sendSocketData = false;
 PFont counterFont;
+int recordState = 0;
+int STATE_RECORDIDLE = 0;
+int STATE_RECORDREADY = 1;
+int STATE_RECORDING = 2;
+int STATE_RECORDINGCOMPLETE = 3;
+int STATE_PLAYBACK = 4;
+int flasherMillis = 0;
 
 Slider[] slider = new Slider[1];
-Button[] button = new Button[1];
+LampButton[] button = new LampButton[4];
 
 int ptr0;
 BetterMouse bmouse;
@@ -39,6 +46,7 @@ void readSocketData() {
       tbBlue = json.getBoolean("tbBlue");
       tbGrey = json.getBoolean("tbGrey");
       tbFight = json.getBoolean("tbFight");
+      recordState = json.getInt("recordState");
       
       print("dataReq: " + str(vol_sendSocketData) + ", captureCount: " + str(captureCount)
             + ", tbBlue: " + str(tbBlue) + ", tbGrey: " + str(tbGrey) + ", tbFight: " + str(tbFight) + "\n");
@@ -97,12 +105,6 @@ void setup() {
   pikaFrame.place(CENTER, height / 2, height / 2);
   
   currentMillis = millis();
-  
-    button[0] = new Button(
-      // String paths to image for button
-      path_file_pikaKnob,
-      // track center position, (x, y)
-      1300 , height / 2.0 );
 
 
 //  for(int i = 0 ; i < slider.length; i++){
@@ -119,11 +121,7 @@ void setup() {
 //      0.5);
 //  }
 
-  
-  
-  
-  
-  float offset0 = 90;
+  float offset0 = 88;
   
   lamp_gray = new Lamp(
     path_file_iconGrey,
@@ -154,6 +152,30 @@ void setup() {
     path_file_iconNew,
     pikaFrame.w + 205.0 + 200 * 2, height / 2.0 + offset0
   );
+  
+  button[0] = new LampButton(
+    // String paths to image for button
+    path_file_buttonForceUnique,
+    // track center position, (x, y)
+    1300 , height / 2.0 - offset0);
+    
+  button[1] = new LampButton(
+    // String paths to image for button
+    path_file_buttonRecord,
+    // track center position, (x, y)
+    1400 , height / 2.0 + offset0);
+    
+  button[2] = new LampButton(
+    // String paths to image for button
+    path_file_buttonPlay,
+    // track center position, (x, y)
+    1500 , height / 2.0 - offset0);
+    
+  button[3] = new LampButton(
+    // String paths to image for button
+    path_file_buttonSave,
+    // track center position, (x, y)
+    1600 , height / 2.0 + offset0);
 
 }
 
@@ -212,6 +234,36 @@ void draw() {
     if (tbFight) {
       lamp_fight.trigger(50);
     }
+    
+    // Force Unique button behavior
+    if ( lamp_match.state == lamp_match.state_Running && button[0].leftOnButton ) {
+      button[0].trigger(1000);
+    }
+    
+    // Flashing buttons
+    if ( currentMillis - flasherMillis > 500 ) {
+        // Record button
+        if ( recordState == STATE_RECORDREADY || recordState == STATE_RECORDINGCOMPLETE) {
+          button[1].trigger(250);
+        }
+        // Play button, Save button
+        if (recordState == STATE_RECORDINGCOMPLETE) {
+          button[2].trigger(250);
+          button[3].trigger(250);
+    }
+        flasherMillis = currentMillis;
+    }
+    
+    // Record button on steady
+    if ( recordState == STATE_RECORDING ) {
+        button[1].trigger(250);
+    }
+    
+    // Play button on steady
+    if ( recordState == STATE_PLAYBACK ) {
+        button[2].trigger(250);
+    }   
+    
   }
 
   lamp_gray.run();

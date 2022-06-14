@@ -26,6 +26,7 @@ class CommHandler:
         self.tbDialogue = False
         self.tbGrey = False
         self.tbFight = False
+        self.recordState = 0
 
 commHandler = CommHandler()
 buttons = []
@@ -80,6 +81,7 @@ def handle_socketServer() :
             msgPayload['tbBlue'] = commHandler.tbDialogue
             msgPayload['tbGrey'] = commHandler.tbGrey
             msgPayload['tbFight'] = commHandler.tbFight
+            msgPayload['recordState'] = commHandler.recordState
             jsonDumpStr = jsonpickle.dumps(msgPayload)
             jsonDumpBytes = jsonDumpStr.encode('UTF-8')
 

@@ -1,9 +1,11 @@
 
+from turtle import done
 import pokeFunctions
 import pokeconstants
 import pokepath
 import pyautogui
 import pokeFunctions
+from functionsTiming import TimerON
 import imagehash
 import pyttsx3
 engine = pyttsx3.init()
@@ -35,12 +37,12 @@ hashDiffFlat_Count = 0
 appendNewHash = 0
 
 # These states are for the audacity recording tools
-recordState = 0
 STATE_RECORDIDLE = 0
 STATE_RECORDREADY = 1
 STATE_RECORDING = 2
 STATE_RECORDINGCOMPLETE = 3
 STATE_PLAYBACK = 4
+playbackTimeout = TimerON()
 
 # Initialize prev_hash with trash hash to avoid
 # "variable used before defined"
@@ -112,7 +114,7 @@ if __name__ == "__main__":
 
                 pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
 
-                recordState = STATE_RECORDREADY
+                pokeComm.commHandler.recordState = STATE_RECORDREADY
 
                 # save screenshot
                 fileName_squareTB = str(newIndex) + ".png"
@@ -139,36 +141,38 @@ if __name__ == "__main__":
 # Audacity control
 
         # Press record button
-        if (( recordState == STATE_RECORDREADY or recordState == STATE_RECORDINGCOMPLETE) 
+        if (( pokeComm.commHandler.recordState == STATE_RECORDREADY or pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE) 
             and pokeComm.buttons[1].pulse_Pressed):
             do_command('SelectAll')
             do_command('Delete')
             do_command('Record1stChoice')
-            recordState = STATE_RECORDING
+            pokeComm.commHandler.recordState = STATE_RECORDING
         
         # Stop recording
-        elif recordState == STATE_RECORDING and pokeComm.buttons[1].pulse_Pressed:
-            do_command('Pause')
-            recordState = STATE_RECORDINGCOMPLETE
+        elif pokeComm.commHandler.recordState == STATE_RECORDING and pokeComm.buttons[1].pulse_Pressed:
+            do_command('Stop')
+            pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
+
+        playbackTimeout.run(pokeComm.commHandler.recordState == STATE_PLAYBACK, 5000)
 
         # Trigger playback
-        if recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[2].pulse_Pressed:
+        if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[2].pulse_Pressed:
             do_command('Play')
-            recordState = STATE_PLAYBACK
+            pokeComm.commHandler.recordState = STATE_PLAYBACK
 
         # Stop playback
-        if recordState == STATE_PLAYBACK and pokeComm.buttons[2].pulse_Pressed:
-            do_command('Pause')
-            recordState = STATE_RECORDINGCOMPLETE
+        elif pokeComm.commHandler.recordState == STATE_PLAYBACK and pokeComm.buttons[2].pulse_Pressed or playbackTimeout.done:
+            do_command('Stop')
+            pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
 
         # Save audio and export
-        if recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[3].pulse_Pressed:
+        if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[3].pulse_Pressed:
             do_command('SelectAll')
             fileName_audio = pokepath.audio + '/' + str(newIndex) + '.wav'
             do_command('Export2: ' + fileName_audio)
             do_command('SelectAll')
             do_command('Delete')
-            recordState = STATE_RECORDIDLE
+            pokeComm.commHandler.recordState = STATE_RECORDIDLE
 
         if manualTrigger8:
             manualTrigger8 = 0
