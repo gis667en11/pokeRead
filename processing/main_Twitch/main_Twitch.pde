@@ -92,6 +92,7 @@ void sendSocketData() {
 void setup() {
 
   size(1920, 437);
+  surface.setTitle("mainTwitchGUI");
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
@@ -236,7 +237,7 @@ void draw() {
     }
     
     // Force Unique button behavior
-    if ( lamp_match.state == lamp_match.state_Running && button[0].leftOnButton ) {
+    if ( lamp_match.state != lamp_match.state_Idle && button[0].leftOnButton ) {
       button[0].trigger(1000);
     }
     

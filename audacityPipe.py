@@ -114,38 +114,24 @@ def do_command(command):
     print("Rcvd: <<< " + response)
     return response
 
+def do_command_async(command):
+    """Do the command. Return the response."""
+    send_command(command)
 
-def play_record(filename):
-    """Import track and record to new track.
-    Note that a stop command is not required as playback will stop at end of selection.
-    """
-    do_command(f"Import2: Filename={os.path.join(PATH, filename + '.wav')}")
-    do_command("Select: Track=0")
-    do_command("SelTrackStartToEnd")
-    # Our imported file has one clip. Find the length of it.
-    clipsinfo = do_command("GetInfo: Type=Clips")
-    clipsinfo = clipsinfo[:clipsinfo.rfind('BatchCommand finished: OK')]
-    clips = json.loads(clipsinfo)
-    duration = clips[0]['end'] - clips[0]['start']
-    # Now we can start recording.
-    do_command("Record2ndChoice")
-    print('Sleeping until recording is complete...')
-    time.sleep(duration + 0.1)
-
-
-def export(filename):
-    """Export the new track, and deleted both tracks."""
-    do_command("SelectAll")
-    do_command(f"Export2: Filename={filename} NumChannels=1.0")
-    do_command("SelectAll")
-    do_command("Delete")
-
-
-def do_one_file(name):
-    """Run test with one input file only."""
-    play_record(name)
-    export(name + "-out.wav")
-
+def get_response_async():
+    """Get response from Audacity."""
+    line = FROMPIPE.readline()
+    print(line + 'at line consideration')
+    result = ""
+    if line == "":
+        return False
+    else:
+        while True:
+            result += line
+            line = FROMPIPE.readline()
+            # print(f"Line read: [{line}]")
+            if line == '\n':
+                return result
 
 def quick_test():
     """Quick test to ensure pipe is working."""

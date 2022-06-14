@@ -7,17 +7,16 @@ import pyautogui
 import pokeFunctions
 from functionsTiming import TimerON
 import imagehash
-import pyttsx3
-engine = pyttsx3.init()
 import os
 import pokeComm
 from PIL import Image
 import imageFunctions as imfun
-from audacityPipe import do_command
+from audacityPipe import do_command, do_command_async, get_response_async
 
 uniqueHash = []
 hashDiffFlat_Count = 0
 appendNewHash = 0
+newIndex = 0
 
 # These states are for the audacity recording tools
 STATE_RECORDIDLE = 0
@@ -25,13 +24,17 @@ STATE_RECORDREADY = 1
 STATE_RECORDING = 2
 STATE_RECORDINGCOMPLETE = 3
 STATE_PLAYBACK = 4
+
+recordDuration = TimerON()
 playbackTimeout = TimerON()
+waitingForResponse = False
 
 # Initialize prev_hash with trash hash to avoid
 # "variable used before defined"
 im = Image.new('RGBA', (pokeconstants.SQUAREHASH_WIDTH,pokeconstants.SQUAREHASH_HEIGHT))
 prev_hash = imagehash.dhash(im, hash_size=pokeconstants.HASH_SIZE)
 
+# print('AtMain')
 # MainProgram
 if __name__ == "__main__":
 
@@ -42,6 +45,7 @@ if __name__ == "__main__":
 
     pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
 
+    # print('AtWhileTrue')
     while True:
 
         # Grab whole screen
@@ -56,6 +60,7 @@ if __name__ == "__main__":
         tbDetected.append(pokeComm.commHandler.tbGrey)
         tbDetected.append(pokeComm.commHandler.tbFight)
 
+        # print('AtIfTrueIntbDetected')
         # If any textbox is present, we must determine if it's new
         # in order to capture it and it's hash
         if True in tbDetected:
@@ -123,6 +128,7 @@ if __name__ == "__main__":
 
 # Audacity control
 
+        # print('Made it to record button')
         # Press record button
         if (( pokeComm.commHandler.recordState == STATE_RECORDREADY or pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE) 
             and pokeComm.buttons[1].pulse_Pressed):
@@ -134,19 +140,33 @@ if __name__ == "__main__":
         # Stop recording
         elif pokeComm.commHandler.recordState == STATE_RECORDING and pokeComm.buttons[1].pulse_Pressed:
             do_command('Stop')
+            do_command('SelectAll')
+            do_command('TruncateSilence')
             pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
 
-        playbackTimeout.run(pokeComm.commHandler.recordState == STATE_PLAYBACK, 5000)
+        # print('After recording')
+        recordDuration.run(pokeComm.commHandler.recordState == STATE_RECORDING, 2147483647)
 
+        # print('after record duration TON')
         # Trigger playback
         if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[2].pulse_Pressed:
-            do_command('Play')
+            # print('Before Play')
+            do_command_async('Play')
+            waitingForResponse = True
+            # print('After Play')
             pokeComm.commHandler.recordState = STATE_PLAYBACK
 
         # Stop playback
-        elif pokeComm.commHandler.recordState == STATE_PLAYBACK and pokeComm.buttons[2].pulse_Pressed or playbackTimeout.done:
+        elif (pokeComm.commHandler.recordState == STATE_PLAYBACK and not waitingForResponse and (pokeComm.buttons[2].pulse_Pressed or playbackTimeout.done)):
             do_command('Stop')
             pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
+
+        # print('before async response')
+        if waitingForResponse:
+            if get_response_async() != False:
+                waitingForResponse = False
+
+        playbackTimeout.run(pokeComm.commHandler.recordState == STATE_PLAYBACK, recordDuration.accumulated)
 
         # Save audio and export
         if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[3].pulse_Pressed:
@@ -158,3 +178,5 @@ if __name__ == "__main__":
             pokeComm.commHandler.recordState = STATE_RECORDIDLE
 
         pokeComm.handle_socketServer()
+
+        # print("test")
