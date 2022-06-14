@@ -169,7 +169,7 @@ if __name__ == "__main__":
         if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[3].pulse_Pressed:
             do_command('SelectAll')
             fileName_audio = pokepath.audio + '/' + str(newIndex) + '.wav'
-            do_command('Export2: ' + fileName_audio)
+            do_command('Export2: Filename=' + fileName_audio)
             do_command('SelectAll')
             do_command('Delete')
             pokeComm.commHandler.recordState = STATE_RECORDIDLE
