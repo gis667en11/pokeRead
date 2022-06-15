@@ -87,11 +87,10 @@ if __name__ == "__main__":
                 pokeComm.commHandler.hashFlat = False 
 
             # Check if this text was previously recorded
+            pokeComm.commHandler.hashMatch = False
             for x in uniqueHash:
                 if x == new_hash:
-                    pokeComm.commHandler.hashMatch = True
-                else:
-                    pokeComm.commHandler.hashMatch = False
+                    pokeComm.commHandler.hashMatch = True                    
 
             if ((not pokeComm.commHandler.hashMatch or pokeComm.buttons[0].pulse_Pressed) 
                 and pokeComm.commHandler.hashFlat):
@@ -151,8 +150,9 @@ if __name__ == "__main__":
         # Trigger playback
         if pokeComm.commHandler.recordState == STATE_RECORDINGCOMPLETE and pokeComm.buttons[2].pulse_Pressed:
             # print('Before Play')
-            do_command_async('Play')
-            waitingForResponse = True
+            playbackTimeout.run(1, recordDuration.accumulated)
+            do_command('Play')
+            #waitingForResponse = True
             # print('After Play')
             pokeComm.commHandler.recordState = STATE_PLAYBACK
 
@@ -161,10 +161,10 @@ if __name__ == "__main__":
             do_command('Stop')
             pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
 
-        # print('before async response')
-        if waitingForResponse:
-            if get_response_async() != False:
-                waitingForResponse = False
+        # # print('before async response')
+        # if waitingForResponse:
+        #     if get_response_async() != False:
+        #         waitingForResponse = False
 
         playbackTimeout.run(pokeComm.commHandler.recordState == STATE_PLAYBACK, recordDuration.accumulated)
 

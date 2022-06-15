@@ -18,25 +18,30 @@ FINAL_IMAGE_INDEX = 1000
 def textBlock_exists(index):
 
     fileName = str(index) + ".png"
-    path_file = os.pokepath.join(pokepath.tbForHash,fileName)
-    return os.pokepath.exists(path_file)
+    path_file = os.path.join(pokepath.tbForHash,fileName)
+    return os.path.exists(path_file)
 
 def screenshotFull_exists(index):
     
     fileName = str(index) + "_full.png"
-    path_file = os.pokepath.join(pokepath.screenshotFull,fileName)
-    return os.pokepath.exists(path_file)
+    path_file = os.path.join(pokepath.screenshotFull,fileName)
+    return os.path.exists(path_file)
 
 def deleteIm(index):
 
     fileName = str(index) + ".png"
-    path_file = os.pokepath.join(pokepath.tbForHash,fileName)
-    if os.pokepath.exists(path_file):
+    path_file = os.path.join(pokepath.tbForHash,fileName)
+    if os.path.exists(path_file):
         os.remove(path_file)
 
     fileName = str(index) + "_full.png"
-    path_file = os.pokepath.join(pokepath.screenshotFull,fileName)
-    if os.pokepath.exists(path_file):
+    path_file = os.path.join(pokepath.screenshotFull,fileName)
+    if os.path.exists(path_file):
+        os.remove(path_file)
+
+    fileName = str(index) + ".wav"
+    path_file = os.path.join(pokepath.audio,fileName)
+    if os.path.exists(path_file):
         os.remove(path_file)
 
 indexImage = 0
@@ -70,20 +75,35 @@ if __name__ == "__main__":
         # If this image pair needs to be renamed
         if x != indexImage:
         
+        # textbox hash image move
             fileName_old = str(x) + ".png"
-            path_oldFile = os.pokepath.join(pokepath.tbForHash,fileName_old)
+            path_oldFile = os.path.join(pokepath.tbForHash,fileName_old)
 
             fileName_new = str(indexImage) + ".png"
-            path_newFile = os.pokepath.join(pokepath.tbForHash,fileName_new)
+            path_newFile = os.path.join(pokepath.tbForHash,fileName_new)
 
             os.rename(path_oldFile,path_newFile)
 
+        # Full screenshot move
             fileName_old = str(x) + "_full.png"
-            path_oldFile = os.pokepath.join(pokepath.screenshotFull,fileName_old)
+            path_oldFile = os.path.join(pokepath.screenshotFull,fileName_old)
 
             fileName_new = str(indexImage) + "_full.png"
-            path_newFile = os.pokepath.join(pokepath.screenshotFull,fileName_new)
+            path_newFile = os.path.join(pokepath.screenshotFull,fileName_new)
 
             os.rename(path_oldFile,path_newFile)
 
+        # Audio file move
+            fileName = str(x) + ".wav"
+            path_oldFile = os.path.join(pokepath.audio,fileName)
+
+            fileName = str(indexImage) + ".wav"
+            path_newFile = os.path.join(pokepath.audio,fileName)
+            if os.path.exists(path_oldFile):
+                os.rename(path_oldFile,path_newFile)
+
+
+
         indexImage += 1
+
+    print('Done!')

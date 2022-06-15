@@ -74,7 +74,7 @@ def getSquareTB(i_image, manual_Conv = 0, manual_Fight = 0):
     greyTB = detect_greyTB(other_image)
     fightTB = detect_fightTB(other_image)
 
-    print(f'TBs detected: Blue: {int(blueTB)}, Grey: {int(greyTB)}, Fight: {int(fightTB)}')
+    #print(f'TBs detected: Blue: {int(blueTB)}, Grey: {int(greyTB)}, Fight: {int(fightTB)}')
 
     # Set crop coordinates for two lines
     # of text depending on TB type

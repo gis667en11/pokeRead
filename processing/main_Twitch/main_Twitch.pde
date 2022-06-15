@@ -17,6 +17,7 @@ int STATE_RECORDING = 2;
 int STATE_RECORDINGCOMPLETE = 3;
 int STATE_PLAYBACK = 4;
 int flasherMillis = 0;
+PImage bigHand;
 
 Slider[] slider = new Slider[1];
 LampButton[] button = new LampButton[4];
@@ -90,15 +91,19 @@ void sendSocketData() {
 }
 
 void setup() {
+  
+  paths();
 
   size(1920, 437);
   surface.setTitle("mainTwitchGUI");
+  
+  bigHand = loadImage(path_file_bigHand);
   
   counterFont = createFont("Anton-Regular.ttf", 110);
   
   myClient = new Client(this, "localhost", 50007);
   
-  paths();
+  
   
   bmouse = new BetterMouse();
   
@@ -181,6 +186,8 @@ void setup() {
 }
 
 void draw() {
+  
+  //cursor(bigHand);
 
   currentMillis = millis();
 

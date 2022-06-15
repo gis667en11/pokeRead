@@ -17,6 +17,8 @@ String path_file_iconBlue;
 String path_file_iconGrey;
 String path_file_iconFight;
 
+String path_file_bigHand;
+
  
 void paths() {
   path_dir = sketchPath() + "\\";
@@ -37,4 +39,5 @@ void paths() {
   path_file_iconGrey = path_data + "icon_Gray.png";
   path_file_iconFight = path_data + "icon_Fight.png";
 
+  path_file_bigHand = path_data + "BigHand.png";
 }

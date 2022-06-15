@@ -1,9 +1,9 @@
 
-import constants
+import pokeconstants
 from PIL import Image
 import imagehash
 import os
-import path
+import pokepath
 import imageFunctions as imfun
 
 uniqueHash = []
@@ -11,8 +11,8 @@ uniqueHash = []
 def reHash():
 
     # delete all previously saved square TB images
-    for f in os.listdir(path.tbForHash):
-        os.remove(os.path.join(path.tbForHash, f))
+    for f in os.listdir(pokepath.tbForHash):
+        os.remove(os.path.join(pokepath.tbForHash, f))
 
     lastImage = 0
     imageIndex = 0
@@ -23,7 +23,7 @@ def reHash():
         
         # For each full screenshot
         fileName_screenshotFull = str(imageIndex) + "_full.png"
-        path_file_screenshotFull = os.path.join(path.screenshotFull,fileName_screenshotFull)
+        path_file_screenshotFull = os.path.join(pokepath.screenshotFull,fileName_screenshotFull)
         
         # Check if it's there
         try:
@@ -39,18 +39,18 @@ def reHash():
         # If there is a screenshot, get the squareTB image and process hash
         else:
             squareTB = imfun.getSquareTB(im_screenshotFull)
-            uniqueHash.append(imagehash.dhash(squareTB, hash_size = constants.HASH_SIZE))
+            uniqueHash.append(imagehash.dhash(squareTB, hash_size = pokeconstants.HASH_SIZE))
 
             # and save the squareTB, why not
             fileName_squareTB = str(imageIndex) + ".png"
-            path_file_squareTB = os.path.join(path.tbForHash,fileName_squareTB)
+            path_file_squareTB = os.path.join(pokepath.tbForHash,fileName_squareTB)
             squareTB.save(path_file_squareTB)
 
         finally:
             imageIndex += 1
 
     # Write hash table to file
-    with open(path.file_HashTable, 'w') as fp:
+    with open(pokepath.file_HashTable, 'w') as fp:
         writeIndex = 0
         for x in uniqueHash:
             strvar = str(x)
