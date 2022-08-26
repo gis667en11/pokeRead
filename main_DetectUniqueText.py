@@ -1,5 +1,4 @@
 
-from turtle import done
 import pokeFunctions
 import pokeconstants
 import pokepath
@@ -140,7 +139,7 @@ if __name__ == "__main__":
         elif pokeComm.commHandler.recordState == STATE_RECORDING and pokeComm.buttons[1].pulse_Pressed:
             do_command('Stop')
             do_command('SelectAll')
-            do_command('TruncateSilence')
+            do_command("TruncateSilence: Threshold=-40, Truncate=0.1")
             pokeComm.commHandler.recordState = STATE_RECORDINGCOMPLETE
 
         # print('After recording')
