@@ -94,12 +94,12 @@ void setup() {
   
   paths();
 
-  size(1920, 437);
+  size(1440, 150);
   surface.setTitle("mainTwitchGUI");
   
   bigHand = loadImage(path_file_bigHand);
   
-  counterFont = createFont("Anton-Regular.ttf", 110);
+  counterFont = createFont("Anton-Regular.ttf", 50);
   
   myClient = new Client(this, "localhost", 50007);
   
@@ -107,11 +107,11 @@ void setup() {
   
   bmouse = new BetterMouse();
   
+  // Put pika frame at the far right
   pikaFrame = new BetterImage(path_file_pikaFrame);
-  pikaFrame.place(CENTER, height / 2, height / 2);
+  pikaFrame.place(CENTER, pikaFrame.w / 2.0, pikaFrame.h / 2.0);
   
   currentMillis = millis();
-
 
 //  for(int i = 0 ; i < slider.length; i++){
 //    slider[i] = new Slider(
@@ -127,61 +127,85 @@ void setup() {
 //      0.5);
 //  }
 
-  float offset0 = 88;
+  float v_offset = pikaFrame.h / 2.0;
+  float h_offset = pikaFrame.w + 75.0;
+  float standard_h_offset = 110.0;
   
   lamp_gray = new Lamp(
     path_file_iconGrey,
-    pikaFrame.w + 105.0, height / 2.0 - offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   lamp_blue = new Lamp(
     path_file_iconBlue,
-    pikaFrame.w + 105.0 + 200 * 1, height / 2.0 - offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   lamp_fight = new Lamp(
     path_file_iconFight,
-    pikaFrame.w + 105.0 + 200 * 2, height / 2.0 - offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   lamp_question = new Lamp(
     path_file_iconQuestion,
-    pikaFrame.w + 205, height / 2.0 + offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   lamp_match = new Lamp(
     path_file_iconMatch,
-    pikaFrame.w + 205.0 + 200 * 1, height / 2.0 + offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   lamp_new = new Lamp(
     path_file_iconNew,
-    pikaFrame.w + 205.0 + 200 * 2, height / 2.0 + offset0
+    h_offset, v_offset
   );
+  
+  h_offset = h_offset + standard_h_offset;
   
   button[0] = new LampButton(
     // String paths to image for button
     path_file_buttonForceUnique,
     // track center position, (x, y)
-    1300 , height / 2.0 - offset0);
+    h_offset, v_offset
+  );
+    
+  h_offset = h_offset + standard_h_offset;
     
   button[1] = new LampButton(
     // String paths to image for button
     path_file_buttonRecord,
     // track center position, (x, y)
-    1400 , height / 2.0 + offset0);
+    h_offset, v_offset
+  );
     
+  h_offset = h_offset + standard_h_offset;
+  
   button[2] = new LampButton(
     // String paths to image for button
     path_file_buttonPlay,
     // track center position, (x, y)
-    1500 , height / 2.0 - offset0);
-    
+    h_offset, v_offset
+  );
+  
+  h_offset = h_offset + standard_h_offset;
+  
   button[3] = new LampButton(
     // String paths to image for button
     path_file_buttonSave,
     // track center position, (x, y)
-    1600 , height / 2.0 + offset0);
+    h_offset, v_offset
+  );
 
 }
 
@@ -192,7 +216,7 @@ void draw() {
   currentMillis = millis();
 
   background(0xFCD883);
-  pikaFrame.place(CENTER, height / 2, height / 2);
+  pikaFrame.place(CORNER, 0, 0);
   
   textFont(counterFont);
   fill(0);

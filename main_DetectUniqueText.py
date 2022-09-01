@@ -37,14 +37,12 @@ prev_hash = imagehash.dhash(im, hash_size=pokeconstants.HASH_SIZE)
 # MainProgram
 if __name__ == "__main__":
 
-
     pokeComm.init_socketServer()
 
     pokeFunctions.pokeReadHashTable(uniqueHash)
 
     pokeComm.commHandler.imageCaptureCount = len(uniqueHash)
 
-    # print('AtWhileTrue')
     while True:
 
         # Grab whole screen
